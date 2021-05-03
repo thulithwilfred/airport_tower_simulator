@@ -53,7 +53,7 @@ public class TaskList implements Encodable {
         }
 
         //Used to access the index prior to the current one in the taskList.
-        int prevPositionIndex = 0;
+        int prevPositionIndex;
 
         for (int i = 0; i < tasks.size(); ++i) {
 
@@ -205,7 +205,7 @@ public class TaskList implements Encodable {
                 listIndex = 0;
             }
         }
-        
+
         return encoded.toString();
     }
 }
