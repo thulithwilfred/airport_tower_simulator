@@ -1,18 +1,26 @@
 package towersim.tasks;
 
+import com.sun.source.tree.BreakTree;
+import towersim.util.Encodable;
+
 import java.util.Objects;
 
 /**
  * Represents a task currently assigned to an aircraft.
  * <p>
  * Tasks relate to an aircraft's movement and ground operations.
+ *
  * @ass1
  */
-public class Task {
-    /** Type of task. */
+public class Task implements Encodable {
+    /**
+     * Type of task.
+     */
     private final TaskType type;
 
-    /** Percent of maximum capacity to be loaded at the gate. Used by LOAD type tasks. */
+    /**
+     * Percent of maximum capacity to be loaded at the gate. Used by LOAD type tasks.
+     */
     private final int loadPercent;
 
     /**
@@ -32,7 +40,7 @@ public class Task {
      * This constructor is used for tasks of the LOAD type, so that a percentage may be specified
      * for the load operation.
      *
-     * @param type type of task
+     * @param type        type of task
      * @param loadPercent percentage of maximum capacity to load
      * @ass1
      */
@@ -81,5 +89,63 @@ public class Task {
             return this.type + " at " + this.loadPercent + "%";
         }
         return String.valueOf(this.type);
+    }
+
+    /**
+     * Returns the machine-readable string representation of this task.
+     * If this is a LOAD-type task, the format of the string to return is
+     * LOAD@loadPercent
+     * <p>
+     * If this is not a LOAD-type task, the format of the string to return is
+     * TASKTYPE
+     *
+     * @return encoded string representation of this task
+     */
+    @Override
+    public String encode() {
+        StringBuilder encoded = new StringBuilder();
+
+        //Append toString() of this task to encoded string
+        if (this.getType() == TaskType.LOAD) {
+            //Adhere to special encode format for LOAD, "LOAD@XX"
+            encoded.append("LOAD@").append(this.getLoadPercent());
+        } else {
+            //Tasks that are not LOAD
+            encoded.append(this.getType().toString());
+        }
+        return encoded.toString();
+    }
+
+    /**
+     * Returns true if and only if this task is equal to the other given task.
+     * For two tasks to be equal, they must have the same task type and load percentage.
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+
+        if (obj == null) {
+            return false;
+        }
+
+        if (obj instanceof Task) {
+            Task compareObject = (Task) obj;
+            return compareObject.getType().equals(this.getType())
+                    && compareObject.getLoadPercent() == this.getLoadPercent();
+        }
+        return false;
+    }
+
+    /**
+     * Returns the hash code of this task.
+     * Two tasks that are equal according to equals(Object) should have the same hash code.
+     *
+     * @return hash code of this task
+     */
+    @Override
+    public int hashCode() {
+        return Objects.hash(this.getType(), this.getLoadPercent());
     }
 }

@@ -53,7 +53,7 @@ public class TaskList implements Encodable {
         }
 
         //Used to access the index prior to the current one in the taskList.
-        int prevPositionIndex = 0;
+        int prevPositionIndex;
 
         for (int i = 0; i < tasks.size(); ++i) {
 
@@ -185,14 +185,7 @@ public class TaskList implements Encodable {
 
         for (int i = 0; i < this.tasks.size(); ++i) {
 
-            //Append toString() of this task to encoded string
-            if (this.tasks.get(listIndex).getType() == TaskType.LOAD) {
-                //Adhere to special encode format for LOAD, "LOAD@XX"
-                encoded.append("LOAD@").append(this.tasks.get(listIndex).getLoadPercent());
-            } else {
-                //Tasks that are not LOAD
-                encoded.append(this.tasks.get(listIndex).toString());
-            }
+            encoded.append(this.tasks.get(listIndex).encode());
 
             //Add comma only if this element isn't the last.
             if (i + 1 != this.tasks.size()) {
@@ -205,7 +198,7 @@ public class TaskList implements Encodable {
                 listIndex = 0;
             }
         }
-        
+
         return encoded.toString();
     }
 }
