@@ -1,5 +1,6 @@
 package towersim.aircraft;
 
+import towersim.ground.Gate;
 import towersim.tasks.TaskList;
 import towersim.tasks.TaskType;
 import towersim.util.EmergencyState;
@@ -10,29 +11,41 @@ import java.util.Objects;
 
 /**
  * Represents an aircraft whose movement is managed by the system.
+ *
  * @ass1
  */
 public abstract class Aircraft implements OccupancyLevel, Tickable, EmergencyState {
 
     /**
      * Weight of a litre of aviation fuel, in kilograms.
+     *
      * @ass1
      */
     public static final double LITRE_OF_FUEL_WEIGHT = 0.8;
 
-    /** Unique callsign to identify the aircraft */
+    /**
+     * Unique callsign to identify the aircraft
+     */
     private String callsign;
 
-    /** Characteristics of this aircraft including weight, fuel capacity, etc. */
+    /**
+     * Characteristics of this aircraft including weight, fuel capacity, etc.
+     */
     private AircraftCharacteristics characteristics;
 
-    /** List of tasks representing the aircraft's desired operations */
+    /**
+     * List of tasks representing the aircraft's desired operations
+     */
     private TaskList tasks;
 
-    /** Current amount of fuel onboard, in litres */
+    /**
+     * Current amount of fuel onboard, in litres
+     */
     private double fuelAmount;
 
-    /** Whether the aircraft is currently in a state of emergency */
+    /**
+     * Whether the aircraft is currently in a state of emergency
+     */
     private boolean emergency;
 
     /**
@@ -52,7 +65,7 @@ public abstract class Aircraft implements OccupancyLevel, Tickable, EmergencySta
      * @ass1
      */
     protected Aircraft(String callsign, AircraftCharacteristics characteristics, TaskList tasks,
-            double fuelAmount) {
+                       double fuelAmount) {
         if (fuelAmount < 0) {
             throw new IllegalArgumentException("Amount of fuel onboard cannot be negative");
         }
@@ -147,6 +160,17 @@ public abstract class Aircraft implements OccupancyLevel, Tickable, EmergencySta
     public abstract int getLoadingTime();
 
     /**
+     * Unloads the aircraft of all cargo (passengers/freight) it is currently carrying.
+     * <p>
+     * This action should be performed instantly. After calling unload(),
+     * OccupancyLevel.calculateOccupancyLevel() should return 0 to indicate that
+     * the aircraft is empty.
+     *
+     * @ass2
+     */
+    public abstract void unload();
+
+    /**
      * Updates the aircraft's state on each tick of the simulation.
      * <p>
      * Aircraft burn fuel while flying. If the aircraft's current task is {@code AWAY}, the amount
@@ -161,6 +185,7 @@ public abstract class Aircraft implements OccupancyLevel, Tickable, EmergencySta
      * (returned by {@link #getLoadingTime()}) is 3, the amount of fuel should increase by
      * 40 litres each tick. Note that refuelling should not result in the aircraft's fuel onboard
      * exceeding its maximum fuel capacity.
+     *
      * @ass1
      */
     @Override
@@ -181,6 +206,42 @@ public abstract class Aircraft implements OccupancyLevel, Tickable, EmergencySta
             this.fuelAmount = Math.min(this.characteristics.fuelCapacity,
                     this.fuelAmount + this.characteristics.fuelCapacity / getLoadingTime());
         }
+    }
+
+    /**
+     * Returns true if and only if this aircraft is equal to the other given aircraft.
+     * For two aircraft to be equal, they must:
+     * have the same callsign
+     * have the same characteristics (AircraftCharacteristics)
+     *
+     * @param obj
+     * @return true if equal, false otherwise
+     */
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+
+        if (obj == null) {
+            return false;
+        }
+
+        if (obj instanceof Aircraft) {
+            Aircraft compareObject = (Aircraft) obj;
+
+            return (this.getCallsign().equals(compareObject.getCallsign()))
+                    && (this.getCharacteristics() == compareObject.getCharacteristics());
+        }
+        return false;
+    }
+
+    /**
+     * Returns the hash code of this gate.
+     * Two aircraft that are equal according to equals(Object) should have the same hash code.
+     */
+    @Override
+    public int hashCode() {
+        return Objects.hash(this.getCharacteristics(), this.getCallsign());
     }
 
     /**
@@ -211,7 +272,30 @@ public abstract class Aircraft implements OccupancyLevel, Tickable, EmergencySta
     }
 
     /**
+     * Returns the machine-readable string representation of this aircraft.
+     * callsign:model:taskListEncoded:fuelAmount:emergency
+     * <p>
+     * Where:
+     * callsign is the aircraft's callsign
+     * model is the Enum.name() of the aircraft's AircraftCharacteristics
+     * taskListEncoded is the encode() representation of the aircraft's task list (see TaskList.encode())
+     * fuelAmount is the aircraft's current amount of fuel onboard, formatted to exactly two (2) decimal places
+     * emergency is whether or not the aircraft is currently in a state of emergency
+     *
+     * @return
+     */
+    public String encode() {
+        //Construct Encoded String based on data required
+        return String.format("%s:%s:%s:%.2f:%s", this.getCallsign(),
+                this.getCharacteristics().name(), this.getTaskList().encode(),
+                this.getFuelAmount(), this.hasEmergency());
+
+    }
+
+
+    /**
      * {@inheritDoc}
+     *
      * @ass1
      */
     @Override
@@ -221,6 +305,7 @@ public abstract class Aircraft implements OccupancyLevel, Tickable, EmergencySta
 
     /**
      * {@inheritDoc}
+     *
      * @ass1
      */
     @Override
@@ -230,6 +315,7 @@ public abstract class Aircraft implements OccupancyLevel, Tickable, EmergencySta
 
     /**
      * {@inheritDoc}
+     *
      * @ass1
      */
     @Override

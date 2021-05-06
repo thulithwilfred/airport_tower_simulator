@@ -5,11 +5,14 @@ import towersim.tasks.TaskType;
 
 /**
  * Represents an aircraft capable of carrying freight cargo.
+ *
  * @ass1
  */
 public class FreightAircraft extends Aircraft {
 
-    /** Amount of freight currently onboard, in kilograms */
+    /**
+     * Amount of freight currently onboard, in kilograms
+     */
     private int freightAmount;
 
     /**
@@ -26,11 +29,11 @@ public class FreightAircraft extends Aircraft {
      * @param fuelAmount      current amount of fuel onboard, in litres
      * @param freightAmount   current amount of freight onboard, in kilograms
      * @throws IllegalArgumentException if freightAmount &lt; 0 or if freightAmount &gt; freight
-     * capacity
+     *                                  capacity
      * @ass1
      */
     public FreightAircraft(String callsign, AircraftCharacteristics characteristics,
-            TaskList tasks, double fuelAmount, int freightAmount) {
+                           TaskList tasks, double fuelAmount, int freightAmount) {
         super(callsign, characteristics, tasks, fuelAmount);
 
         if (freightAmount < 0) {
@@ -42,6 +45,17 @@ public class FreightAircraft extends Aircraft {
         }
 
         this.freightAmount = freightAmount;
+    }
+
+    /**
+     * Unloads the aircraft of all cargo (passengers/freight) it is currently carrying.
+     * <p>
+     * This action should be performed instantly. After calling unload(),
+     * OccupancyLevel.calculateOccupancyLevel() should return 0 to indicate
+     * that the aircraft is empty.
+     */
+    public void unload() {
+        this.freightAmount = 0;
     }
 
     /**
@@ -151,6 +165,7 @@ public class FreightAircraft extends Aircraft {
      * According to {@link #getLoadingTime()}, this amount of freight will take 2 ticks to load.
      * So, a single call to {@code tick()} should increase the amount of freight onboard by
      * 26,000kg / 2 = 13,000kg.
+     *
      * @ass1
      */
     @Override
@@ -163,5 +178,28 @@ public class FreightAircraft extends Aircraft {
             this.freightAmount = Math.min(this.freightAmount + freightToLoadThisTick,
                     this.getCharacteristics().freightCapacity);
         }
+    }
+
+    /**
+     * Returns the machine-readable string representation of this freight aircraft.
+     * The format of the string to return is
+     * callsign:model:taskListEncoded:fuelAmount:emergency:freightAmount
+     * <p>
+     * Where:
+     * callsign is the aircraft's callsign
+     * model is the Enum.name() of the aircraft's AircraftCharacteristics
+     * taskListEncoded is the encode() representation of the aircraft's task list (see TaskList.encode())
+     * fuelAmount is the aircraft's current amount of fuel onboard, formatted to exactly two (2) decimal places
+     * emergency is whether or not the aircraft is currently in a state of emergency
+     * freightAmount is the amount of freight currently onboard
+     *
+     * @return encoded string representation of this aircraft
+     */
+    @Override
+    public String encode() {
+        //Construct Encoded String based on data required
+        return String.format("%s:%s:%s:%.2f:%s:%d", this.getCallsign(),
+                this.getCharacteristics().name(), this.getTaskList().encode(),
+                this.getFuelAmount(), this.hasEmergency(), this.freightAmount);
     }
 }

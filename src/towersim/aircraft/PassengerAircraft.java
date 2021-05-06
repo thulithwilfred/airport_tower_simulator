@@ -5,17 +5,21 @@ import towersim.tasks.TaskType;
 
 /**
  * Represents an aircraft capable of carrying passenger cargo.
+ *
  * @ass1
  */
 public class PassengerAircraft extends Aircraft {
 
     /**
      * Average weight of a single passenger including their baggage, in kilograms.
+     *
      * @ass1
      */
     public static final double AVG_PASSENGER_WEIGHT = 90;
 
-    /** Number of passengers currently onboard the aircraft */
+    /**
+     * Number of passengers currently onboard the aircraft
+     */
     private int numPassengers;
 
     /**
@@ -32,11 +36,11 @@ public class PassengerAircraft extends Aircraft {
      * @param fuelAmount      current amount of fuel onboard, in litres
      * @param numPassengers   current number of passengers onboard
      * @throws IllegalArgumentException if numPassengers &lt; 0 or if numPassengers &gt; passenger
-     * capacity
+     *                                  capacity
      * @ass1
      */
     public PassengerAircraft(String callsign, AircraftCharacteristics characteristics,
-            TaskList tasks, double fuelAmount, int numPassengers) {
+                             TaskList tasks, double fuelAmount, int numPassengers) {
         super(callsign, characteristics, tasks, fuelAmount);
 
         if (numPassengers < 0) {
@@ -48,6 +52,17 @@ public class PassengerAircraft extends Aircraft {
         }
 
         this.numPassengers = numPassengers;
+    }
+
+    /**
+     * Unloads the aircraft of all cargo (passengers/freight) it is currently carrying.
+     * <p>
+     * This action should be performed instantly. After calling unload(),
+     * OccupancyLevel.calculateOccupancyLevel() should return 0 to
+     * indicate that the aircraft is empty.
+     */
+    public void unload() {
+        this.numPassengers = 0;
     }
 
     /**
@@ -150,6 +165,7 @@ public class PassengerAircraft extends Aircraft {
      * According to {@link #getLoadingTime()}, this number of passengers will take 2 ticks to load.
      * So, a single call to {@code tick()} should increase the number of passengers onboard by
      * 68 / 2 = 34.
+     *
      * @ass1
      */
     @Override
@@ -162,5 +178,29 @@ public class PassengerAircraft extends Aircraft {
             this.numPassengers = Math.min(this.numPassengers + paxToLoadThisTick,
                     this.getCharacteristics().passengerCapacity);
         }
+    }
+
+    /**
+     * Returns the machine-readable string representation of this passenger aircraft.
+     * <p>
+     * The format of the string to return is
+     * callsign:model:taskListEncoded:fuelAmount:emergency:numPassengers
+     * <p>
+     * Where:
+     * callsign is the aircraft's callsign
+     * model is the Enum.name() of the aircraft's AircraftCharacteristics
+     * taskListEncoded is the encode() representation of the aircraft's task list (see TaskList.encode())
+     * fuelAmount is the aircraft's current amount of fuel onboard, formatted to exactly two (2) decimal places
+     * emergency is whether or not the aircraft is currently in a state of emergency
+     * numPassengers is the number of passengers currently onboard the aircraft
+     *
+     * @return encoded string representation of this aircraft
+     */
+    @Override
+    public String encode() {
+        //Construct Encoded String based on data required
+        return String.format("%s:%s:%s:%.2f:%s:%d", this.getCallsign(),
+                this.getCharacteristics().name(), this.getTaskList().encode(),
+                this.getFuelAmount(), this.hasEmergency(), this.numPassengers);
     }
 }

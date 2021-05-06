@@ -29,7 +29,7 @@ public class AircraftTest {
      */
     class DummyAircraft extends Aircraft {
         public DummyAircraft(String callsign, AircraftCharacteristics characteristics,
-                TaskList tasks, double fuelAmount) {
+                             TaskList tasks, double fuelAmount) {
             super(callsign, characteristics, tasks, fuelAmount);
         }
 
@@ -41,6 +41,10 @@ public class AircraftTest {
         @Override
         public int calculateOccupancyLevel() {
             return 0;
+        }
+
+        @Override
+        public void unload() {
         }
     }
 
@@ -78,7 +82,7 @@ public class AircraftTest {
                         new Task(TaskType.AWAY),
                         new Task(TaskType.LAND),
                         new Task(TaskType.WAIT))),
-                AircraftCharacteristics.ROBINSON_R44.fuelCapacity * 2/3,
+                AircraftCharacteristics.ROBINSON_R44.fuelCapacity * 2 / 3,
                 AircraftCharacteristics.ROBINSON_R44.passengerCapacity);
 
         this.dummyAircraft1 = new DummyAircraft("DUMMY1", AircraftCharacteristics.AIRBUS_A320,
@@ -99,7 +103,7 @@ public class AircraftTest {
                         new Task(TaskType.AWAY),
                         new Task(TaskType.LAND),
                         new Task(TaskType.WAIT))),
-                AircraftCharacteristics.AIRBUS_A320.fuelCapacity * 1/3);
+                AircraftCharacteristics.AIRBUS_A320.fuelCapacity * 1 / 3);
     }
 
     @Test
@@ -109,7 +113,8 @@ public class AircraftTest {
             new DummyAircraft("ABC001", AircraftCharacteristics.AIRBUS_A320, taskList1, -100);
             fail("Aircraft constructor should throw an IllegalArgumentException if a negative "
                     + "fuel amount is given");
-        } catch (IllegalArgumentException expected) {}
+        } catch (IllegalArgumentException expected) {
+        }
     }
 
     @Test
@@ -120,7 +125,8 @@ public class AircraftTest {
                     AircraftCharacteristics.AIRBUS_A320.fuelCapacity + 200);
             fail("Aircraft constructor should throw an IllegalArgumentException if the given fuel "
                     + "amount is greater than the aircraft's fuel capacity");
-        } catch (IllegalArgumentException expected) {}
+        } catch (IllegalArgumentException expected) {
+        }
     }
 
     @Test
@@ -174,12 +180,12 @@ public class AircraftTest {
 
         // dummyAircraft1 has full fuel
         assertEquals(failMsg, AircraftCharacteristics.AIRBUS_A320.emptyWeight
-                + AircraftCharacteristics.AIRBUS_A320.fuelCapacity * Aircraft.LITRE_OF_FUEL_WEIGHT,
+                        + AircraftCharacteristics.AIRBUS_A320.fuelCapacity * Aircraft.LITRE_OF_FUEL_WEIGHT,
                 dummyAircraft1.getTotalWeight(), 1e-5);
 
         // dummyAircraft2 has 1/3 capacity of fuel
         assertEquals(failMsg, AircraftCharacteristics.AIRBUS_A320.emptyWeight
-                        + AircraftCharacteristics.AIRBUS_A320.fuelCapacity * 1/3
+                        + AircraftCharacteristics.AIRBUS_A320.fuelCapacity * 1 / 3
                         * Aircraft.LITRE_OF_FUEL_WEIGHT,
                 dummyAircraft2.getTotalWeight(), 1e-5);
     }
@@ -197,7 +203,7 @@ public class AircraftTest {
         passengerAircraft1.tick();
         // passengerAircraft1 should now have 9/10 of its fuel capacity
         assertEquals("tick() should reduce current fuel by 1/10 of capacity if the current task is "
-                        + "AWAY", AircraftCharacteristics.AIRBUS_A320.fuelCapacity * 9/10,
+                        + "AWAY", AircraftCharacteristics.AIRBUS_A320.fuelCapacity * 9 / 10,
                 passengerAircraft1.getFuelAmount(), 1e-5);
     }
 
@@ -221,7 +227,7 @@ public class AircraftTest {
         // dummyAircraft2 initially has 1/3 of its fuel capacity, with current task LOAD
         // loading time of dummyAircraft2 is 3 ticks, so 1/3 of capacity should be loaded each tick
         dummyAircraft2.tick();
-        assertEquals(failMsg, AircraftCharacteristics.AIRBUS_A320.fuelCapacity * 2/3,
+        assertEquals(failMsg, AircraftCharacteristics.AIRBUS_A320.fuelCapacity * 2 / 3,
                 dummyAircraft2.getFuelAmount(), 1e-5);
 
         dummyAircraft2.tick();
