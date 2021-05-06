@@ -1,18 +1,26 @@
 package towersim.ground;
 
 import towersim.aircraft.Aircraft;
+import towersim.tasks.Task;
 import towersim.util.NoSpaceException;
+
+import java.util.Objects;
 
 /**
  * Represents an aircraft gate with facilities for a single aircraft to be parked.
+ *
  * @ass1
  */
 public class Gate {
 
-    /** Unique (airport-wide) gate number. */
+    /**
+     * Unique (airport-wide) gate number.
+     */
     private final int gateNumber;
 
-    /** Aircraft currently occupying the gate; or null if gate is empty. */
+    /**
+     * Aircraft currently occupying the gate; or null if gate is empty.
+     */
     private Aircraft aircraftAtGate;
 
     /**
@@ -62,6 +70,7 @@ public class Gate {
      * Removes the currently parked aircraft from the gate.
      * <p>
      * If no aircraft is parked at the gate, no action should be taken.
+     *
      * @ass1
      */
     public void aircraftLeaves() {
@@ -88,6 +97,40 @@ public class Gate {
         return this.aircraftAtGate;
     }
 
+
+    /**
+     * Returns true if and only if this gate is equal to the other given gate.
+     * For two gates to be equal, they must have the same gate number.
+     *
+     * @param obj obj - other object to check equality
+     * @return true if equal, false otherwise
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+
+        if (obj == null) {
+            return false;
+        }
+
+        if (obj instanceof Gate) {
+            Gate compareObject = (Gate) obj;
+            return (this.getGateNumber() == compareObject.getGateNumber());
+        }
+        return false;
+    }
+
+    /**
+     * Returns the hash code of this gate.
+     * Two gates that are equal according to equals(Object) should have the same hash code.
+     */
+    @Override
+    public int hashCode() {
+        return Objects.hash(this.getGateNumber());
+    }
+
     /**
      * Returns the human-readable string representation of this gate.
      * <p>
@@ -106,5 +149,24 @@ public class Gate {
         return String.format("Gate %d [%s]",
                 this.gateNumber,
                 (aircraftAtGate == null ? "empty" : aircraftAtGate.getCallsign()));
+    }
+
+    /**
+     * Returns the machine-readable string representation of this gate.
+     * <p>
+     * The format of the string to return is
+     * <p>
+     * gateNumber:callsign
+     * <p>
+     * Where:
+     * gateNumber is the gate number of this gate
+     * callsign is the callsign of the aircraft parked at this gate,
+     * or empty if the gate is unoccupied
+     *
+     * @return encoded string representation of this gate
+     */
+    public String encode() {
+        return String.format("%d:%s", this.getGateNumber(),
+                (this.isOccupied() ? this.getAircraftAtGate().getCallsign() : "empty"));
     }
 }

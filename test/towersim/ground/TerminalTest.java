@@ -21,7 +21,7 @@ public class TerminalTest {
     private Gate gate1;
     private Gate gate2;
     private Gate gate3;
-    private Aircraft aircraft;
+    private Aircraft aircraft, aircraft1, aircraft2;
 
     @Before
     public void setup() {
@@ -35,12 +35,74 @@ public class TerminalTest {
                         new Task(TaskType.LOAD), new Task(TaskType.TAKEOFF))),
                 AircraftCharacteristics.AIRBUS_A320.fuelCapacity,
                 AircraftCharacteristics.AIRBUS_A320.passengerCapacity);
+        this.aircraft1 = new PassengerAircraft("BIGBOSS", AircraftCharacteristics.AIRBUS_A320,
+                new TaskList(List.of(new Task(TaskType.AWAY), new Task(TaskType.LAND),
+                        new Task(TaskType.LOAD), new Task(TaskType.TAKEOFF))),
+                AircraftCharacteristics.AIRBUS_A320.fuelCapacity,
+                AircraftCharacteristics.AIRBUS_A320.passengerCapacity);
+        this.aircraft2 = new PassengerAircraft("SNAKE", AircraftCharacteristics.AIRBUS_A320,
+                new TaskList(List.of(new Task(TaskType.AWAY), new Task(TaskType.LAND),
+                        new Task(TaskType.LOAD), new Task(TaskType.TAKEOFF))),
+                AircraftCharacteristics.AIRBUS_A320.fuelCapacity,
+                AircraftCharacteristics.AIRBUS_A320.passengerCapacity);
     }
+
+    @Test
+    public void hash_Test1() {
+        assertTrue("These should equal", airplaneTerminal.equals(new AirplaneTerminal(1)));
+        assertEquals("Hashcode according to equals() should be the same", airplaneTerminal.hashCode(), new AirplaneTerminal(1).hashCode());
+
+        assertTrue("These should not equal", !airplaneTerminal.equals(new HelicopterTerminal(1)));
+        assertNotEquals("Hashcode according to equals() should be the same", airplaneTerminal.hashCode(), new HelicopterTerminal(1).hashCode());
+
+        assertNotEquals("Hashcode according to equals() should be NOT the same", airplaneTerminal.hashCode(), new AirplaneTerminal(77).hashCode());
+    }
+
+    @Test
+    public void equals_Test1() {
+        assertTrue("These classes should not be equal", !airplaneTerminal.equals(new HelicopterTerminal(1)));
+        assertTrue("These classes should be equal", airplaneTerminal.equals(new AirplaneTerminal(1)));
+        assertTrue("These classes should not be equal", !airplaneTerminal.equals(new AirplaneTerminal(15)));
+        assertTrue("These classes should not be equal", !helicopterTerminal.equals(new AirplaneTerminal(1)));
+    }
+
+    @Test
+    public void encode_Test2() {
+        String expected = "HelicopterTerminal:2:false:0\n";
+        assertEquals("Terminal encode should match", expected, helicopterTerminal.encode());
+        helicopterTerminal.declareEmergency();
+        String expected1 = "HelicopterTerminal:2:true:0\n";
+        assertEquals("Terminal encode should match", expected1, helicopterTerminal.encode());
+    }
+
+
+    @Test
+    public void encode_Test1() {
+
+        String expected = "AirplaneTerminal:1:false:0\n";
+        assertEquals("Terminal encode should match", expected, airplaneTerminal.encode());
+
+        try {
+            airplaneTerminal.addGate(gate1);
+            gate1.parkAircraft(aircraft);
+            airplaneTerminal.addGate(gate2);
+            gate2.parkAircraft(aircraft1);
+            airplaneTerminal.addGate(gate3);
+            gate3.parkAircraft(aircraft2);
+            airplaneTerminal.addGate(new Gate(69));
+            airplaneTerminal.declareEmergency();
+        } catch (NoSpaceException ex) {
+        }
+
+        String expected1 = "AirplaneTerminal:1:true:4\n1:ABC123\n2:BIGBOSS\n3:SNAKE\n69:empty";
+        assertEquals("Terminal encode should match", expected1, airplaneTerminal.encode());
+    }
+
 
     @Test
     public void getTerminalNumber_Test() {
         assertEquals("getTerminalNumber() should return the terminal number passed to "
-                        + "AirplaneTerminal(int)", 1, airplaneTerminal.getTerminalNumber());
+                + "AirplaneTerminal(int)", 1, airplaneTerminal.getTerminalNumber());
 
         assertEquals("getTerminalNumber() should return the terminal number passed to "
                 + "HelicopterTerminal(int)", 2, helicopterTerminal.getTerminalNumber());
@@ -87,7 +149,8 @@ public class TerminalTest {
             airplaneTerminal.addGate(new Gate(1));
             fail("Calling addGate() on a terminal at maximum gate capacity should result in a "
                     + "NoSpaceException");
-        } catch (NoSpaceException expected) {}
+        } catch (NoSpaceException expected) {
+        }
     }
 
     @Test
@@ -162,7 +225,8 @@ public class TerminalTest {
         try {
             airplaneTerminal.findUnoccupiedGate();
             fail("findUnoccupiedGate() should throw an exception if all gates are occupied");
-        } catch (NoSuitableGateException expected) {}
+        } catch (NoSuitableGateException expected) {
+        }
     }
 
     @Test
