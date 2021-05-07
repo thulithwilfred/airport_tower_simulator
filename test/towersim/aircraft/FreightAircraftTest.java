@@ -8,8 +8,7 @@ import towersim.tasks.TaskType;
 
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 
 public class FreightAircraftTest {
     private TaskList taskList1;
@@ -63,6 +62,50 @@ public class FreightAircraftTest {
     }
 
     @Test
+    public void encode_Test2() {
+        TaskList taskList3 = new TaskList(List.of(
+                new Task(TaskType.LOAD, 60), // load 30% of capacity of freight
+                new Task(TaskType.TAKEOFF),
+                new Task(TaskType.AWAY),
+                new Task(TaskType.LAND)));
+
+        Aircraft test = new FreightAircraft("OOOF", AircraftCharacteristics.SIKORSKY_SKYCRANE,
+                taskList3,
+                200,
+                2300);
+
+        String expected = "OOOF:SIKORSKY_SKYCRANE:LOAD@60,TAKEOFF,AWAY,LAND:200.00:false:2300";
+        String expected1 = "OOOF:SIKORSKY_SKYCRANE:LOAD@60,TAKEOFF,AWAY,LAND:200.00:true:2300";
+
+        assertEquals("Encoded mismatch", expected, test.encode());
+        test.declareEmergency();
+        assertEquals("Encoded mismatch", expected1, test.encode());
+        test.clearEmergency();
+        assertEquals("Encoded mismatch", expected, test.encode());
+    }
+
+
+    @Test
+    public void encode_Test1() {
+        String expected1 = "ABC002:BOEING_747_8F:LOAD@30,TAKEOFF,AWAY,LAND:135670.20:false:60000";
+        assertEquals("Encoded mismatch", expected1, aircraft2.encode());
+
+        String expected2 = "ABC002:BOEING_747_8F:LOAD@30,TAKEOFF,AWAY,LAND:135670.20:true:60000";
+        aircraft2.declareEmergency();
+        assertEquals("Encoded mismatch", expected2, aircraft2.encode());
+    }
+
+    @Test
+    public void unload_Test1() {
+        assertNotEquals("Starting occupancy is non-zero", aircraft1.calculateOccupancyLevel(), 0);
+        assertNotEquals("Starting occupancy is non-zero", aircraft2.calculateOccupancyLevel(), 0);
+        aircraft1.unload();
+        aircraft2.unload();
+        assertEquals("Occupancy now should be 0", aircraft1.calculateOccupancyLevel(), 0);
+        assertEquals("Occupancy now should be 0", aircraft2.calculateOccupancyLevel(), 0);
+    }
+
+    @Test
     public void constructorThrowsExceptionNegativeFreightTest() {
         try {
             // negative freight amount not allowed
@@ -70,7 +113,8 @@ public class FreightAircraftTest {
                     AircraftCharacteristics.BOEING_747_8F.freightCapacity, -1500);
             fail("FreightAircraft constructor should throw an IllegalArgumentException if a "
                     + "negative amount of freight is given");
-        } catch (IllegalArgumentException expected) {}
+        } catch (IllegalArgumentException expected) {
+        }
     }
 
     @Test
@@ -82,7 +126,8 @@ public class FreightAircraftTest {
                     AircraftCharacteristics.BOEING_747_8F.freightCapacity + 2000);
             fail("FreightAircraft constructor should throw an IllegalArgumentException if the "
                     + "given amount of freight is greater than the aircraft's freight capacity");
-        } catch (IllegalArgumentException expected) {}
+        } catch (IllegalArgumentException expected) {
+        }
     }
 
     @Test
@@ -115,7 +160,7 @@ public class FreightAircraftTest {
         // 30% of 137756kg of freight = 45918.66kg
         // 45918.66 <= 50000 so return 2
         assertEquals("getLoadingTime() should return the appropriate loading time based on the "
-                        + "provided table", 2, aircraft2.getLoadingTime());
+                + "provided table", 2, aircraft2.getLoadingTime());
     }
 
     @Test

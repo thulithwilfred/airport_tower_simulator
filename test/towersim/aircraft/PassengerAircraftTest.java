@@ -8,8 +8,8 @@ import towersim.tasks.TaskType;
 
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
+import static org.junit.Assert.assertNotEquals;
 
 public class PassengerAircraftTest {
 
@@ -73,6 +73,44 @@ public class PassengerAircraftTest {
                 AircraftCharacteristics.AIRBUS_A320.passengerCapacity - 20);
     }
 
+
+    @Test
+    public void encode_Test1() {
+        TaskList taskList3 = new TaskList(List.of(
+                new Task(TaskType.LOAD, 60), // load 30% of capacity of freight
+                new Task(TaskType.TAKEOFF),
+                new Task(TaskType.AWAY),
+                new Task(TaskType.LAND)));
+
+        Aircraft test = new PassengerAircraft("LLAMA", AircraftCharacteristics.FOKKER_100,
+                taskList3,
+                69.685, 47);
+        String expected = "LLAMA:FOKKER_100:LOAD@60,TAKEOFF,AWAY,LAND:69.69:false:47";
+        String expected1 = "LLAMA:FOKKER_100:LOAD@60,TAKEOFF,AWAY,LAND:69.69:true:47";
+
+        assertEquals("Encode mismatch", expected, test.encode());
+        test.declareEmergency();
+        assertEquals("Encode mismatch", expected1, test.encode());
+        test.clearEmergency();
+        //Max out Fuel && Passengers
+        for (int i = 0; i < 10; ++i) {
+            test.tick();
+        }
+        String expected3 = "LLAMA:FOKKER_100:LOAD@60,TAKEOFF,AWAY,LAND:13365.00:false:97";
+        assertEquals("Encode mismatch", expected3, test.encode());
+    }
+
+    @Test
+    public void unload_Test1() {
+        assertNotEquals("Starting occupancy is non-zero", aircraft1.calculateOccupancyLevel(), 0);
+        assertNotEquals("Starting occupancy is non-zero", aircraft2.calculateOccupancyLevel(), 0);
+        aircraft1.unload();
+        aircraft2.unload();
+        assertEquals("Occupancy now should be 0", aircraft1.calculateOccupancyLevel(), 0);
+        assertEquals("Occupancy now should be 0", aircraft2.calculateOccupancyLevel(), 0);
+    }
+
+
     @Test
     public void constructorThrowsExceptionNegativePassengersTest() {
         try {
@@ -81,7 +119,8 @@ public class PassengerAircraftTest {
                     AircraftCharacteristics.AIRBUS_A320.fuelCapacity, -15);
             fail("PassengerAircraft constructor should throw an IllegalArgumentException if a "
                     + "negative number of passengers is given");
-        } catch (IllegalArgumentException expected) {}
+        } catch (IllegalArgumentException expected) {
+        }
     }
 
     @Test
@@ -94,7 +133,8 @@ public class PassengerAircraftTest {
             fail("PassengerAircraft constructor should throw an IllegalArgumentException if the "
                     + "given number of passengers is greater than the aircraft's passenger "
                     + "capacity");
-        } catch (IllegalArgumentException expected) {}
+        } catch (IllegalArgumentException expected) {
+        }
     }
 
     @Test

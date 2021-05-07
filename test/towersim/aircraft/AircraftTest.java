@@ -107,6 +107,95 @@ public class AircraftTest {
     }
 
     @Test
+    public void hash_Test3() {
+        DummyAircraft comp1 = new DummyAircraft("WICK", AircraftCharacteristics.FOKKER_100, new TaskList(List.of(new Task(TaskType.WAIT))),
+                123);
+        DummyAircraft comp2 = new DummyAircraft("WICK", AircraftCharacteristics.BOEING_747_8F, new TaskList(List.of(new Task(TaskType.WAIT))),
+                321);
+        //Characteristic mistmatch
+        assertNotEquals("The hashcode should not equal", comp1.hashCode(), comp2.hashCode());
+    }
+
+    @Test
+    public void hash_Test2() {
+        DummyAircraft comp1 = new DummyAircraft("KRATOS", AircraftCharacteristics.FOKKER_100, new TaskList(List.of(new Task(TaskType.WAIT))),
+                123);
+        DummyAircraft comp2 = new DummyAircraft("WICK", AircraftCharacteristics.FOKKER_100, new TaskList(List.of(new Task(TaskType.WAIT))),
+                321);
+
+        assertNotEquals("The hashcode should not equal", comp1.hashCode(), comp2.hashCode());
+    }
+
+
+    @Test
+    public void hash_Test1() {
+        DummyAircraft comp1 = new DummyAircraft("KRATOS", AircraftCharacteristics.FOKKER_100, new TaskList(List.of(new Task(TaskType.WAIT))),
+                123);
+        DummyAircraft comp2 = new DummyAircraft("KRATOS", AircraftCharacteristics.FOKKER_100, new TaskList(List.of(new Task(TaskType.WAIT))),
+                321);
+
+        assertEquals("The hashcode should equal", comp1.hashCode(), comp2.hashCode());
+    }
+
+    @Test
+    public void equals_Test2() {
+        DummyAircraft comp1 = new DummyAircraft("KRATOS", AircraftCharacteristics.FOKKER_100, new TaskList(List.of(new Task(TaskType.WAIT))),
+                123);
+        DummyAircraft comp2 = new DummyAircraft("ATREUS", AircraftCharacteristics.FOKKER_100, new TaskList(List.of(new Task(TaskType.WAIT))),
+                321);
+        //Callsign mismatch
+        assertTrue("These aircrafts should not be equal", !(comp1.equals(comp2)));
+    }
+
+    @Test
+    public void equals_Test1() {
+        DummyAircraft comp1 = new DummyAircraft("KRATOS", AircraftCharacteristics.FOKKER_100, new TaskList(List.of(new Task(TaskType.WAIT))),
+                123);
+        DummyAircraft comp2 = new DummyAircraft("KRATOS", AircraftCharacteristics.FOKKER_100, new TaskList(List.of(new Task(TaskType.WAIT))),
+                125);
+        //Fuel isn't considered a factor here
+        assertTrue("These aircrafts should be equal", comp1.equals(comp2));
+
+        DummyAircraft comp3 = new DummyAircraft("KRATOS", AircraftCharacteristics.BOEING_787, new TaskList(List.of(new Task(TaskType.WAIT))),
+                432);
+        //Characteristic mismatch
+        assertTrue("These aircrafts should not be equal", !(comp1.equals(comp3) && comp2.equals(comp3)));
+    }
+
+
+    @Test
+    public void encode_Test2() {
+        String expected = "KRATOS:FOKKER_100:WAIT:123.00:false";
+        try {
+            DummyAircraft temp = new DummyAircraft("KRATOS", AircraftCharacteristics.FOKKER_100, new TaskList(List.of(new Task(TaskType.WAIT))),
+                    123);
+            assertEquals("Encoded string should match", expected, temp.encode());
+            temp.declareEmergency();
+            String expected2 = "KRATOS:FOKKER_100:WAIT:123.00:true";
+            assertEquals("Encoded string should match", expected2, temp.encode());
+        } catch (IllegalArgumentException e) {
+        }
+
+    }
+
+
+    @Test
+    public void encode_Test1() {
+        String expected = "WAYNE:AIRBUS_A320:AWAY,LAND,LOAD@0,TAKEOFF:500.00:false";
+        try {
+            DummyAircraft temp = new DummyAircraft("WAYNE", AircraftCharacteristics.AIRBUS_A320, taskList1,
+                    500);
+            assertEquals("Encoded string should match", expected, temp.encode());
+            temp.declareEmergency();
+            String expected2 = "WAYNE:AIRBUS_A320:AWAY,LAND,LOAD@0,TAKEOFF:500.00:true";
+            assertEquals("Encoded string should match", expected2, temp.encode());
+        } catch (IllegalArgumentException e) {
+        }
+
+    }
+
+
+    @Test
     public void constructorThrowsExceptionNegativeFuelTest() {
         try {
             // negative fuel amount not allowed

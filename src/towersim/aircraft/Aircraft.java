@@ -1,6 +1,5 @@
 package towersim.aircraft;
 
-import towersim.ground.Gate;
 import towersim.tasks.TaskList;
 import towersim.tasks.TaskType;
 import towersim.util.EmergencyState;
@@ -214,7 +213,7 @@ public abstract class Aircraft implements OccupancyLevel, Tickable, EmergencySta
      * have the same callsign
      * have the same characteristics (AircraftCharacteristics)
      *
-     * @param obj
+     * @param obj other object to check equality
      * @return true if equal, false otherwise
      */
     public boolean equals(Object obj) {
@@ -278,11 +277,12 @@ public abstract class Aircraft implements OccupancyLevel, Tickable, EmergencySta
      * Where:
      * callsign is the aircraft's callsign
      * model is the Enum.name() of the aircraft's AircraftCharacteristics
-     * taskListEncoded is the encode() representation of the aircraft's task list (see TaskList.encode())
-     * fuelAmount is the aircraft's current amount of fuel onboard, formatted to exactly two (2) decimal places
+     * taskListEncoded is the encode() representation of the aircraft's task list
+     * fuelAmount is the aircraft's current amount of fuel onboard, formatted to exactly
+     * two (2) decimal places
      * emergency is whether or not the aircraft is currently in a state of emergency
      *
-     * @return
+     * @return encoded string representation of this aircraft
      */
     public String encode() {
         //Construct Encoded String based on data required
