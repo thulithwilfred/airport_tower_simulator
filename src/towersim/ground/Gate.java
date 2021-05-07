@@ -1,7 +1,6 @@
 package towersim.ground;
 
 import towersim.aircraft.Aircraft;
-import towersim.tasks.Task;
 import towersim.util.NoSpaceException;
 
 import java.util.Objects;
