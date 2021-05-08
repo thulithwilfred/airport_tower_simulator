@@ -227,7 +227,7 @@ public abstract class Aircraft implements OccupancyLevel, Tickable, EmergencySta
 
         if (obj instanceof Aircraft) {
             Aircraft compareObject = (Aircraft) obj;
-
+            
             return (this.getCallsign().equals(compareObject.getCallsign()))
                     && (this.getCharacteristics() == compareObject.getCharacteristics());
         }

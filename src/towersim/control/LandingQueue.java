@@ -70,15 +70,24 @@ public class LandingQueue extends AircraftQueue implements Encodable {
             if (aircraft.hasEmergency()) {
                 return aircraft;
             }
+        }
+
+        //Iterates through queue in FIFO order
+        for (Aircraft aircraft : this.landingQueue) {
             //Check fuel level.
             if (aircraft.getFuelPercentRemaining() <= 20) {
                 return aircraft;
             }
+        }
+
+        //Iterates through queue in FIFO order
+        for (Aircraft aircraft : this.landingQueue) {
             //Check if passenger aircraft.
             if (aircraft instanceof PassengerAircraft) {
                 return aircraft;
             }
         }
+
         //Return first Aircraft in queue.
         return this.landingQueue.get(0);
     }
@@ -107,11 +116,25 @@ public class LandingQueue extends AircraftQueue implements Encodable {
                 itr.remove();
                 return aircraft;
             }
-            //Check fuel level.
+        }
+
+        //Reset Iterator
+        itr = this.landingQueue.iterator();
+
+        while (itr.hasNext()) {
+            Aircraft aircraft = itr.next();
+            //Check if passenger aircraft.
             if (aircraft.getFuelPercentRemaining() <= 20) {
                 itr.remove();
                 return aircraft;
             }
+        }
+
+        //Reset Iterator
+        itr = this.landingQueue.iterator();
+
+        while (itr.hasNext()) {
+            Aircraft aircraft = itr.next();
             //Check if passenger aircraft.
             if (aircraft instanceof PassengerAircraft) {
                 itr.remove();
@@ -135,10 +158,64 @@ public class LandingQueue extends AircraftQueue implements Encodable {
      * Adding or removing elements from the returned list should not affect the original queue.
      *
      * @return list of all aircraft in queue, in queue order
+     * @implNote The following methods creates a copy of the landing queue and removes air crafts
+     * from it once added to the ordered queue. This was added, so that if there are any
+     * duplicates in the landing queue (unhandled by spec), these will also be added to
+     * the ordered queue in FIFO order (according to rules).
      */
     public List<Aircraft> getAircraftInOrder() {
+
+        if (this.landingQueue.size() <= 0) {
+            return null;
+        }
+
         //Return a new list copied from the existing (new address)
-        return (new ArrayList<>(this.landingQueue));
+        ArrayList<Aircraft> orderedQueue = new ArrayList<>();
+
+        //Copy the original landing queue, this is used to account for duplicates.
+        ArrayList<Aircraft> copyLandingQueue = new ArrayList<>(this.landingQueue);
+
+        Iterator<Aircraft> itr = copyLandingQueue.iterator();
+
+        while (itr.hasNext()) {
+            Aircraft aircraft = itr.next();
+            if (aircraft.hasEmergency()) {
+                orderedQueue.add(aircraft);
+                itr.remove();
+            }
+        }
+        //Reset iterator
+        itr = copyLandingQueue.iterator();
+
+        while (itr.hasNext()) {
+            Aircraft aircraft = itr.next();
+            //Check fuel level, and not already added to list (contains will invoke equals()).
+            if (aircraft.getFuelPercentRemaining() <= 20) {
+                orderedQueue.add(aircraft);
+                itr.remove();
+            }
+        }
+
+        itr = copyLandingQueue.iterator();
+
+        while (itr.hasNext()) {
+            Aircraft aircraft = itr.next();
+            //Check if passenger aircraft, and not already added to list.
+            if (aircraft instanceof PassengerAircraft) {
+                orderedQueue.add(aircraft);
+                itr.remove();
+            }
+        }
+
+        itr = copyLandingQueue.iterator();
+
+        while (itr.hasNext()) {
+            Aircraft aircraft = itr.next();
+            //Check if passenger aircraft, and not already added to list.
+            orderedQueue.add(aircraft);
+            itr.remove();
+        }
+        return orderedQueue;
     }
 
     /**
@@ -148,12 +225,11 @@ public class LandingQueue extends AircraftQueue implements Encodable {
      * @return true if aircraft is in queue; false otherwise
      */
     public boolean containsAircraft(Aircraft aircraft) {
-        for (Aircraft aircraftMatch : this.landingQueue) {
-            if (aircraft.equals(aircraftMatch)) {
-                return true;
-            }
-        }
-        return false;
-    }
 
+        if (this.landingQueue.size() <= 0) {
+            return false;
+        }
+
+        return this.landingQueue.contains(aircraft);
+    }
 }
