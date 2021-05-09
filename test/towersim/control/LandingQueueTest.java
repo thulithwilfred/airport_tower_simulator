@@ -98,10 +98,90 @@ public class LandingQueueTest {
                 AircraftCharacteristics.BOEING_747_8F.fuelCapacity * 0, 0);
     }
 
+
+    @Test
+    public void removeAircraft_Test4() {
+
+        LandingQueue q1 = new LandingQueue();
+        q1.addAircraft(fCraft2);
+        q1.addAircraft(passengerAircraft2);
+        q1.addAircraft(pCraft1); //Low Fuel
+        q1.addAircraft(passengerAircraft3);
+        q1.addAircraft(fCraft4); //low Fuel
+
+        assertEquals("Remove Mismatch", pCraft1, q1.removeAircraft());
+        assertEquals("Remove Mismatch", fCraft4, q1.removeAircraft());
+        assertEquals("Remove Mismatch", passengerAircraft2, q1.removeAircraft());
+        assertEquals("Remove Mismatch", passengerAircraft3, q1.removeAircraft());
+        assertEquals("Remove Mismatch", fCraft2, q1.removeAircraft());
+    }
+
+    @Test
+    public void removeAircraft_Test3() {
+        //Test the removal order for Rule 1.
+        //Test removal of duplicates
+        LandingQueue q1 = new LandingQueue();
+        q1.addAircraft(fCraft3);
+        q1.addAircraft(fCraft3);
+        q1.addAircraft(fCraft3);
+        q1.addAircraft(passengerAircraft3);
+        q1.addAircraft(passengerAircraft3);
+        q1.addAircraft(passengerAircraft2);
+        q1.addAircraft(passengerAircraft2);
+        q1.addAircraft(fCraft1);
+
+        //Incorrect use of expected/actual here too lazy to change.
+        assertEquals("Aircraft mismatch", q1.removeAircraft(), passengerAircraft3);
+        assertEquals("Aircraft mismatch", q1.removeAircraft(), passengerAircraft3);
+        assertEquals("Aircraft mismatch", q1.removeAircraft(), passengerAircraft2);
+        assertEquals("Aircraft mismatch", q1.removeAircraft(), passengerAircraft2);
+        assertEquals("Aircraft mismatch", q1.removeAircraft(), fCraft3);
+        assertEquals("Aircraft mismatch", q1.removeAircraft(), fCraft3);
+        assertEquals("Aircraft mismatch", q1.removeAircraft(), fCraft3);
+        assertEquals("Aircraft mismatch", q1.removeAircraft(), fCraft1);
+        assertEquals("Aircraft mismatch", null, q1.removeAircraft());
+    }
+
     @Test
     public void removeAircraft_Test2() {
         //Test the removal order for Rule 1.
         LandingQueue q1 = new LandingQueue();
+        q1.addAircraft(fCraft4);
+        fCraft4.declareEmergency();
+        q1.addAircraft(fCraft2);
+        q1.addAircraft(passengerAircraft2);
+        q1.addAircraft(passengerAircraft3);
+        q1.addAircraft(pCraft1); //Low Fuel
+
+        ArrayList<Aircraft> expected = new ArrayList<>();
+
+        expected.add(pCraft1);
+        expected.add(passengerAircraft2);
+        expected.add(passengerAircraft3);
+        expected.add(fCraft2);
+
+        assertEquals("Aircraft mismatch", q1.removeAircraft(), fCraft4);
+        List<Aircraft> ordered = q1.getAircraftInOrder();
+        assertEquals("Size Mismatch", ordered.size(), expected.size());
+        //Sanity Check
+        for (int i = 0; i < ordered.size(); ++i) {
+            assertEquals("Ordered Mismatch", ordered.get(i), expected.get(i));
+        }
+        //Test the order in which items should be removed based on urgency rules.
+        assertEquals("Peek Mismatch", q1.peekAircraft(), pCraft1);
+        assertEquals("Aircraft mismatch", q1.removeAircraft(), pCraft1);
+
+        assertEquals("Peek Mismatch", q1.peekAircraft(), passengerAircraft2);
+        assertEquals("Aircraft mismatch", q1.removeAircraft(), passengerAircraft2);
+
+        assertEquals("Peek Mismatch", q1.peekAircraft(), passengerAircraft3);
+        assertEquals("Aircraft mismatch", q1.removeAircraft(), passengerAircraft3);
+
+        assertEquals("Peek Mismatch", q1.peekAircraft(), fCraft2);
+        assertEquals("Aircraft mismatch", q1.removeAircraft(), fCraft2);
+
+        assertEquals("Peek Mismatch", null, q1.peekAircraft());
+        assertEquals("Expected Null", null, q1.removeAircraft());
     }
 
     @Test
