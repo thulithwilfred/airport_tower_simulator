@@ -164,6 +164,7 @@ public class TakeoffQueueTest {
 
     @Test
     public void peekAircraft_Test2() {
+        
         TakeoffQueue q1 = new TakeoffQueue();
         q1.addAircraft(passengerAircraft2);
         q1.addAircraft(passengerAircraft3);

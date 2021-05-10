@@ -13,7 +13,7 @@ import java.util.*;
  * prioritised for landing based on "urgency" factors such as remaining fuel onboard,
  * emergency status and cargo type.
  */
-public class LandingQueue extends AircraftQueue implements Encodable {
+public class LandingQueue extends AircraftQueue {
 
     /**
      * A list that contains Aircrafts in landing queue.
