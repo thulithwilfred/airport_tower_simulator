@@ -304,8 +304,7 @@ public class ControlTower implements Tickable {
     public void loadAircraft() {
         Iterator<Map.Entry<Aircraft, Integer>> itr =
                 this.getLoadingAircraft().entrySet().iterator();
-        int decrementedTickTime = 0;
-        int updatedTime = 0;
+        int decrementedTickTime;
 
         while (itr.hasNext()) {
             Map.Entry<Aircraft, Integer> mapIndex = itr.next();
