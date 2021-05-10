@@ -16,12 +16,14 @@ import towersim.tasks.TaskType;
 import towersim.util.NoSpaceException;
 import towersim.util.NoSuitableGateException;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import static org.junit.Assert.*;
 
 public class ControlTowerTest {
-    private ControlTower tower;
+    private ControlTower tower, towerA2;
 
     private AirplaneTerminal airplaneTerminal1;
     private AirplaneTerminal airplaneTerminal2;
@@ -41,10 +43,10 @@ public class ControlTowerTest {
     private Aircraft passengerAircraftLoading;
     private Aircraft passengerAircraftLoadingSingleTick;
     private Aircraft freightAircraftLoadingMultipleTicks;
+    private Aircraft fCraft1, fCraft2, fCraft3, fCraft4, pCraft1;
 
     @Before
     public void setup() {
-        this.tower = new ControlTower();
 
         this.airplaneTerminal1 = new AirplaneTerminal(1);
         this.airplaneTerminal2 = new AirplaneTerminal(2);
@@ -162,6 +164,65 @@ public class ControlTowerTest {
                 AircraftCharacteristics.AIRBUS_A320,
                 taskListAway,
                 AircraftCharacteristics.AIRBUS_A320.fuelCapacity, 120);
+
+
+        this.tower = new ControlTower(0, new ArrayList<Aircraft>(), new LandingQueue(), new TakeoffQueue(), new HashMap<Aircraft, Integer>());
+
+
+        //Adding Extras
+        this.fCraft1 = new FreightAircraft("fcraft1",
+                AircraftCharacteristics.BOEING_747_8F,
+                taskListLand,
+                AircraftCharacteristics.BOEING_747_8F.fuelCapacity, 0);
+
+        this.fCraft2 = new FreightAircraft("fcraft2",
+                AircraftCharacteristics.BOEING_747_8F,
+                taskListTakeoff,
+                AircraftCharacteristics.BOEING_747_8F.fuelCapacity, 0);
+
+        this.fCraft3 = new FreightAircraft("fcraft3",
+                AircraftCharacteristics.BOEING_747_8F,
+                taskListLoad,
+                AircraftCharacteristics.BOEING_747_8F.fuelCapacity, 0);
+
+        this.fCraft4 = new FreightAircraft("fcraft4_low_fuel",
+                AircraftCharacteristics.BOEING_747_8F,
+                taskList1,
+                AircraftCharacteristics.BOEING_747_8F.fuelCapacity * 0.20, 0);
+
+        this.pCraft1 = new FreightAircraft("pcraft1_low_fuel",
+                AircraftCharacteristics.BOEING_747_8F,
+                taskList1,
+                AircraftCharacteristics.BOEING_747_8F.fuelCapacity * 0, 0);
+
+        ArrayList<Aircraft> crafts = new ArrayList<>(List.of(passengerAircraft1, passengerAircraft2, passengerAircraft3, passengerAircraftTakingOff));
+
+        this.towerA2 = new ControlTower(0, new ArrayList<Aircraft>(), new LandingQueue(), new TakeoffQueue(), new HashMap<Aircraft, Integer>());
+    }
+
+    @Test
+    public void addAircraft_Test1() {
+        towerA2.addTerminal(airplaneTerminal1);
+        towerA2.addTerminal(airplaneTerminal2);
+        towerA2.addTerminal(helicopterTerminal1);
+
+        try {
+            airplaneTerminal1.addGate(gate1);
+            airplaneTerminal1.addGate(gate2);
+        } catch (NoSpaceException e) {
+            fail("Should not throw NoSpace");
+        }
+
+        try {
+            towerA2.addAircraft(fCraft1);
+            towerA2.addAircraft(fCraft2);
+            towerA2.addAircraft(fCraft3);
+            assertTrue(towerA2.getLandingQueue().containsAircraft(fCraft1));
+            assertTrue(towerA2.getTakeOffQueue().containsAircraft(fCraft2));
+            assertTrue(towerA2.getLoadingAircraft().containsKey(fCraft3));
+        } catch (NoSuitableGateException e) {
+            fail("Should not throw NoGate");
+        }
     }
 
     @Test
@@ -178,7 +239,7 @@ public class ControlTowerTest {
         tower.addTerminal(airplaneTerminal1);
 
         assertEquals("addTerminal() should add the given terminal to the list of terminals, "
-                + "and getTerminals() should return that list",
+                        + "and getTerminals() should return that list",
                 List.of(airplaneTerminal1),
                 tower.getTerminals());
     }
@@ -215,7 +276,7 @@ public class ControlTowerTest {
         }
 
         assertEquals("addAircraft() should add the given aircraft to the tower's list of aircraft, "
-                + "and getAircraft() should return that list",
+                        + "and getAircraft() should return that list",
                 List.of(passengerAircraft1, passengerAircraft2),
                 tower.getAircraft());
     }
@@ -227,7 +288,8 @@ public class ControlTowerTest {
             tower.addAircraft(passengerAircraft1);
             fail("Calling addAircraft() when there are no suitable gates should result in a "
                     + "NoSuitableGateException");
-        } catch (NoSuitableGateException expected) {}
+        } catch (NoSuitableGateException expected) {
+        }
     }
 
     @Test
@@ -270,7 +332,8 @@ public class ControlTowerTest {
             tower.findUnoccupiedGate(passengerAircraft1);
             fail("findUnoccupiedGate() should throw a NoSuitableGateException if there is an unoccupied "
                     + "gate but it is not in a terminal of the correct aircraft type");
-        } catch (NoSuitableGateException expected) {}
+        } catch (NoSuitableGateException expected) {
+        }
     }
 
     @Test
@@ -278,7 +341,8 @@ public class ControlTowerTest {
         try {
             tower.findUnoccupiedGate(passengerAircraft1);
             fail("findUnoccupiedGate() should throw a NoSuitableGateException if there are no terminals");
-        } catch (NoSuitableGateException expected) {}
+        } catch (NoSuitableGateException expected) {
+        }
     }
 
     @Test
@@ -361,7 +425,7 @@ public class ControlTowerTest {
         }
 
         assertEquals("findGateOfAircraft() should return the gate where the given aircraft is "
-                + "parked by searching all terminals until it is found", gate3,
+                        + "parked by searching all terminals until it is found", gate3,
                 tower.findGateOfAircraft(passengerAircraft2));
     }
 
@@ -387,7 +451,7 @@ public class ControlTowerTest {
         }
 
         assertNull("findGateOfAircraft() should return null if the given aircraft is not parked "
-                        + "at any gate", tower.findGateOfAircraft(passengerAircraft3));
+                + "at any gate", tower.findGateOfAircraft(passengerAircraft3));
     }
 
     @Test

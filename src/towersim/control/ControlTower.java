@@ -111,6 +111,9 @@ public class ControlTower implements Tickable {
      * suitable gate as found by the {@link #findUnoccupiedGate(Aircraft)} method.
      * If there is no suitable gate for the aircraft, the {@code NoSuitableGateException} thrown by
      * {@code findUnoccupiedGate()} should be propagated out of this method.
+     * <p>
+     * After the aircraft has been added, it should be placed in the appropriate queues by calling
+     * placeAircraftInQueues(Aircraft).
      *
      * @param aircraft aircraft to add
      * @throws NoSuitableGateException if there is no suitable gate for an aircraft with a current
@@ -128,6 +131,7 @@ public class ControlTower implements Tickable {
             }
         }
         this.aircraft.add(aircraft);
+        this.placeAircraftInQueues(aircraft);
     }
 
     /**
