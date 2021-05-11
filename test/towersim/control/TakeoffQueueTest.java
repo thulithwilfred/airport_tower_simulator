@@ -100,6 +100,32 @@ public class TakeoffQueueTest {
     }
 
     @Test
+    public void encode_Test() {
+        TakeoffQueue q1 = new TakeoffQueue();
+        q1.addAircraft(fCraft2);
+        q1.addAircraft(passengerAircraft2);
+        q1.addAircraft(pCraft1); //Low Fuel
+        q1.addAircraft(passengerAircraft3);
+        q1.addAircraft(fCraft4); //low Fuel
+
+        String expected = "TakeoffQueue:5" + System.lineSeparator()
+                + "fcraft2,AP2,pcraft1_low_fuel,HP1,fcraft4_low_fuel";
+        assertEquals("Encode mismatch", q1.encode(), expected);
+    }
+
+    @Test
+    public void toString_Test() {
+        TakeoffQueue q1 = new TakeoffQueue();
+        q1.addAircraft(fCraft2);
+        q1.addAircraft(passengerAircraft2);
+        q1.addAircraft(pCraft1); //Low Fuel
+        q1.addAircraft(passengerAircraft3);
+        q1.addAircraft(fCraft4); //low Fuel
+        String expected = "TakeoffQueue [fcraft2, AP2, pcraft1_low_fuel, HP1, fcraft4_low_fuel]";
+        assertEquals("toString() mismatch", expected, q1.toString());
+    }
+
+    @Test
     public void containsAircraft_Test() {
         TakeoffQueue q1 = new TakeoffQueue();
         q1.addAircraft(fCraft3);
@@ -164,7 +190,7 @@ public class TakeoffQueueTest {
 
     @Test
     public void peekAircraft_Test2() {
-        
+
         TakeoffQueue q1 = new TakeoffQueue();
         q1.addAircraft(passengerAircraft2);
         q1.addAircraft(passengerAircraft3);

@@ -98,6 +98,33 @@ public class LandingQueueTest {
                 AircraftCharacteristics.BOEING_747_8F.fuelCapacity * 0, 0);
     }
 
+    @Test
+    public void encode_Test() {
+        LandingQueue q1 = new LandingQueue();
+        q1.addAircraft(fCraft2);
+        q1.addAircraft(passengerAircraft2);
+        q1.addAircraft(pCraft1); //Low Fuel
+        q1.addAircraft(passengerAircraft3);
+        q1.addAircraft(fCraft4); //low Fuel
+        fCraft2.declareEmergency();
+        String expected = "LandingQueue:5" + System.lineSeparator()
+                + "fcraft2,pcraft1_low_fuel,fcraft4_low_fuel,AP2,HP1";
+        assertEquals("Encode mismatch", expected, q1.encode());
+    }
+
+
+    @Test
+    public void toString_Test() {
+        LandingQueue q1 = new LandingQueue();
+        q1.addAircraft(fCraft2);
+        q1.addAircraft(passengerAircraft2);
+        q1.addAircraft(pCraft1); //Low Fuel
+        q1.addAircraft(passengerAircraft3);
+        q1.addAircraft(fCraft4); //low Fuel
+        fCraft2.declareEmergency();
+        String expected = "LandingQueue [fcraft2, pcraft1_low_fuel, fcraft4_low_fuel, AP2, HP1]";
+        assertEquals("toString() mismatch", q1.toString(), expected);
+    }
 
     @Test
     public void removeAircraft_Test4() {

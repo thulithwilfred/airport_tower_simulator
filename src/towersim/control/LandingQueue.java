@@ -165,13 +165,13 @@ public class LandingQueue extends AircraftQueue {
      */
     public List<Aircraft> getAircraftInOrder() {
 
-        if (this.landingQueue.size() <= 0) {
-            return null;
-        }
-
         //Return a new list copied from the existing (new address)
         ArrayList<Aircraft> orderedQueue = new ArrayList<>();
 
+        if (this.landingQueue.size() <= 0) {
+            return orderedQueue;
+        }
+        
         //Copy the original landing queue, this is used to account for duplicates.
         ArrayList<Aircraft> copyLandingQueue = new ArrayList<>(this.landingQueue);
 
