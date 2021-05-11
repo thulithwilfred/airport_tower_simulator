@@ -4,15 +4,20 @@ import towersim.aircraft.Aircraft;
 import towersim.aircraft.AircraftCharacteristics;
 import towersim.aircraft.FreightAircraft;
 import towersim.aircraft.PassengerAircraft;
+import towersim.ground.AirplaneTerminal;
+import towersim.ground.Gate;
+import towersim.ground.HelicopterTerminal;
 import towersim.ground.Terminal;
 import towersim.tasks.Task;
 import towersim.tasks.TaskList;
 import towersim.tasks.TaskType;
 import towersim.util.MalformedSaveException;
+import towersim.util.NoSpaceException;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.Reader;
+import java.nio.Buffer;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -22,6 +27,32 @@ import java.util.Map;
  * associated entities from files.
  */
 public class ControlTowerInitialiser {
+
+    /**
+     * Creates a control tower instance by reading various airport entities from the given readers.
+     * <p>
+     * The following methods should be called in this order, and their results stored temporarily,
+     * to load information from the readers:
+     * <p>
+     * loadTick(Reader) to load the number of elapsed ticks
+     * loadAircraft(Reader) to load the list of all aircraft
+     * loadTerminalsWithGates(Reader, List) to load the terminals and their gates
+     * loadQueues(Reader, List, TakeoffQueue, LandingQueue, Map) to load the takeoff queue,
+     * landing queue and map of loading aircraft to their loading time remaining
+     *
+     * @param tick               reader from which to load the number of ticks elapsed
+     * @param aircraft           reader from which to load the list of aircraft
+     * @param queues             reader from which to load the aircraft queues and map of
+     *                           loading aircraft
+     * @param terminalsWithGates reader from which to load the terminals and their gates
+     * @return control tower created by reading from the given readers
+     */
+    public static ControlTower createControlTower(Reader tick, Reader aircraft, Reader queues,
+                                                  Reader terminalsWithGates)
+            throws MalformedSaveException, IOException {
+        //TODO THIS 
+        return null;
+    }
 
     /**
      * Loads the number of ticks elapsed from the given reader instance.
@@ -432,8 +463,8 @@ public class ControlTowerInitialiser {
         readQueue(br, aircraft, takeoffQueue);
         readQueue(br, aircraft, landingQueue);
         readLoadingAircraft(br, aircraft, loadingAircraft);
-        String line;
-        if ((line = br.readLine()) != null) {
+        //Next line should be EOF
+        if (br.readLine() != null) {
             //The file still contains more data.
             throw new MalformedSaveException();
         }
@@ -680,7 +711,227 @@ public class ControlTowerInitialiser {
      */
     public static List<Terminal> loadTerminalsWithGates(Reader reader, List<Aircraft> aircraft)
             throws MalformedSaveException, IOException {
-        
-        return new ArrayList<Terminal>();
+        BufferedReader br = new BufferedReader(reader);
+        String line;
+        int numOfTerminals;
+        List<Terminal> loadedTerminals = new ArrayList<>();
+
+        if ((line = br.readLine()) != null) {
+
+            try {
+                numOfTerminals = Integer.parseInt(line);
+            } catch (NumberFormatException nfe) {
+                //The number of terminals specified at the top of the file is not an integer 
+                throw new MalformedSaveException();
+            }
+
+            //Attempt to read terminals
+            for (int i = 0; i < numOfTerminals; ++i) {
+                if ((line = br.readLine()) != null) {
+                    loadedTerminals.add(readTerminal(line, br, aircraft));
+                } else {
+                    throw new MalformedSaveException();
+                }
+            }
+            //Theres more data beyond the last specified gate,
+            //Thus, number of terminals specified is not equal to the number of
+            // terminals actually read from the reader.
+            if ((line = br.readLine()) != null) {
+                throw new MalformedSaveException();
+            }
+
+
+        } else {
+            //File unable to be parsed. (Likely empty)
+            throw new MalformedSaveException();
+        }
+
+        return loadedTerminals;
     }
+
+    /**
+     * Reads a terminal from the given string and reads its gates from the given reader instance.
+     * <p>
+     * The format of the given string and the text read from the reader should match the encoded
+     * representation of a terminal, as described in Terminal.encode().
+     * <p>
+     * For an example of valid encoded terminal with gates, see the provided
+     * saves/terminalsWithGates_basic.txt and saves/terminalsWithGates_default.txt files.
+     *
+     * @param line     string containing the first line of the encoded terminal
+     * @param reader   reader from which to load the gates of the terminal (subsequent lines)
+     * @param aircraft list of all aircraft, used when validating that callsigns exist
+     * @return decoded terminal with its gates added.
+     * @throws IOException            if an IOException is encountered when reading from the reader
+     * @throws MalformedSaveException if the format of the given string or the text read from t
+     *                                he reader is invalid according to the rules above
+     */
+    public static Terminal readTerminal(String line, BufferedReader reader,
+                                        List<Aircraft> aircraft)
+            throws IOException, MalformedSaveException {
+        Terminal decodedTerminal;
+        String[] terminalData = line.split(":");
+        //The number of colons (:) detected mismatch
+        if (getColonCountInString(line) != 3 || terminalData.length != 4) {
+            throw new MalformedSaveException();
+        }
+
+        //Parses terminal number and number of gates based on specified rules.
+        //MalformedSaveException is thrown in the following function either is invalid.
+        int terminalNum = parseTerminalNumber(terminalData[1]);
+        int numGates = parseNumGates(terminalData[3]);
+
+        if (terminalData[0].equals("AirplaneTerminal")) {
+            decodedTerminal = new AirplaneTerminal(terminalNum);
+        } else if (terminalData[0].equals("HelicopterTerminal")) {
+            decodedTerminal = new HelicopterTerminal(terminalNum);
+        } else {
+            //Neither AirplaneTerminal nor HelicopterTerminal
+            throw new MalformedSaveException();
+        }
+
+        //Attempt to read gates based on specified numGates.
+        String gateLine;
+
+        for (int i = 0; i < numGates; ++i) {
+            if ((gateLine = reader.readLine()) != null) {
+                try {
+                    decodedTerminal.addGate(readGate(gateLine, aircraft));
+                } catch (NoSpaceException nse) {
+                    //MAX_NUM_GATES not reached
+                }
+            } else {
+                //A line containing an encoded gate was expected, but EOF (end of file)
+                throw new MalformedSaveException();
+            }
+        }
+        return decodedTerminal;
+    }
+
+    /**
+     * Reads a gate from its encoded representation in the given string.
+     * <p>
+     * The format of the string should match the encoded representation of a gate,
+     * as described in Gate.encode().
+     * <p>
+     * The encoded string is invalid if any of the following conditions are true:
+     * <p>
+     * The number of colons (:) detected was more/fewer than expected.
+     * The gate number is not an integer (i.e. cannot be parsed by
+     * Integer.parseInt(String)).
+     * The gate number is less than one (1).
+     * The callsign of the aircraft parked at the gate is not empty and the callsign
+     * does not correspond to the callsign of any aircraft contained in the list of
+     * aircraft given as a parameter.
+     *
+     * @param line     string containing the encoded gate
+     * @param aircraft list of all aircraft, used when validating that callsigns exist
+     * @return decoded gate instance
+     * @throws MalformedSaveException if the format of the given string is invalid according
+     *                                to the rules above
+     */
+    public static Gate readGate(String line, List<Aircraft> aircraft)
+            throws MalformedSaveException {
+
+        String[] gateData = line.split(":");
+
+        if (getColonCountInString(line) != 1 || gateData.length != 2) {
+            //The number of colons (:) detected was more/fewer than expected.
+            throw new MalformedSaveException();
+        }
+
+        //Parse gate number, throws MalformedSaveException if invalid.
+        int gateNum = parseGateNum(gateData[0]);
+        int[] airCraftIndex = new int[1];
+        //The callsign of the aircraft parked at the gate is not empty and
+        // the callsign does not correspond to the callsign of any aircraft contained
+        // in the list of aircraft given as a parameter.
+        if (!gateData[1].equals("empty")
+                && !callsignInAircraftList(gateData[1], aircraft, airCraftIndex)) {
+            throw new MalformedSaveException();
+        }
+
+        Gate decodedGate = new Gate(gateNum);
+
+        try {
+            if (!gateData[1].equals("empty")) {
+                decodedGate.parkAircraft(aircraft.get(airCraftIndex[0]));
+            }
+        } catch (NoSpaceException nse) {
+            //Gate will be empty
+        }
+        return decodedGate;
+    }
+
+    /**
+     * Converted string gate num to int gateNum, ensures that the converted type
+     * adheres to the following rules.
+     * The gate number is not an integer (i.e. cannot be parsed by Integer.parseInt(String)).
+     * The gate number is less than one (1).
+     *
+     * @param num to convert to string and parse.
+     * @return int converted gate num.
+     * @throws MalformedSaveException if num is invalid according.
+     */
+    private static int parseGateNum(String num) throws MalformedSaveException {
+        int gateNum;
+        try {
+            gateNum = Integer.parseInt(num);
+            if (gateNum < 1) {
+                //The gate number is less than one
+                throw new MalformedSaveException();
+            }
+        } catch (NumberFormatException nfe) {
+            //The gate number is not an integer
+            throw new MalformedSaveException();
+        }
+        return gateNum;
+    }
+
+    /**
+     * Parses a string value to an integer value for a given terminal number.
+     * If num is < 1 throws MalformedSaveExp or if num in non int type.
+     *
+     * @param num to convert to int.
+     * @return converted terminal number
+     * @throws MalformedSaveException if num is invalid according.
+     */
+    private static int parseTerminalNumber(String num) throws MalformedSaveException {
+        int terminalNum;
+        try {
+            terminalNum = Integer.parseInt(num);
+            if (terminalNum < 1) {
+                //The terminal number is less than one (1).
+                throw new MalformedSaveException();
+            }
+        } catch (NumberFormatException nfe) {
+            //The terminal number is not an integer
+            throw new MalformedSaveException();
+        }
+        return terminalNum;
+    }
+
+    /**
+     * Converts number of gates to int and returns.
+     * MalformedSaveException if:
+     * The number of gates is less than zero or is greater than Terminal.MAX_NUM_GATES
+     * The number of gates in the terminal is not an integer.
+     *
+     * @param num of gates to convert
+     * @return int converted value
+     * @throws MalformedSaveException if num is invalid based on above rules
+     */
+    private static int parseNumGates(String num) throws MalformedSaveException {
+        int numGates;
+        try {
+            numGates = Integer.parseInt(num);
+            if (numGates < 0 || numGates > Terminal.MAX_NUM_GATES) {
+                throw new MalformedSaveException();
+            }
+        } catch (NumberFormatException nfe) {
+            throw new MalformedSaveException();
+        }
+        return numGates;
+    }
+
 }

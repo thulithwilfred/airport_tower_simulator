@@ -68,10 +68,10 @@ public class TerminalTest {
 
     @Test
     public void encode_Test2() {
-        String expected = "HelicopterTerminal:2:false:0\n";
+        String expected = "HelicopterTerminal:2:false:0";
         assertEquals("Terminal encode should match", expected, helicopterTerminal.encode());
         helicopterTerminal.declareEmergency();
-        String expected1 = "HelicopterTerminal:2:true:0\n";
+        String expected1 = "HelicopterTerminal:2:true:0";
         assertEquals("Terminal encode should match", expected1, helicopterTerminal.encode());
     }
 
@@ -79,7 +79,7 @@ public class TerminalTest {
     @Test
     public void encode_Test1() {
 
-        String expected = "AirplaneTerminal:1:false:0\n";
+        String expected = "AirplaneTerminal:1:false:0";
         assertEquals("Terminal encode should match", expected, airplaneTerminal.encode());
 
         try {
@@ -94,7 +94,7 @@ public class TerminalTest {
         } catch (NoSpaceException ex) {
         }
 
-        String expected1 = "AirplaneTerminal:1:true:4\n1:ABC123\n2:BIGBOSS\n3:SNAKE\n69:empty";
+        String expected1 = "AirplaneTerminal:1:true:4" + System.lineSeparator() + "1:ABC123" + System.lineSeparator() + "2:BIGBOSS" + System.lineSeparator() + "3:SNAKE" + System.lineSeparator() + "69:empty";
         assertEquals("Terminal encode should match", expected1, airplaneTerminal.encode());
     }
 

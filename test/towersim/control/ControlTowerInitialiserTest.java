@@ -5,6 +5,7 @@ import org.junit.Test;
 import towersim.aircraft.Aircraft;
 import towersim.aircraft.AircraftCharacteristics;
 import towersim.aircraft.FreightAircraft;
+import towersim.ground.Terminal;
 import towersim.tasks.Task;
 import towersim.tasks.TaskList;
 import towersim.tasks.TaskType;
@@ -27,7 +28,7 @@ public class ControlTowerInitialiserTest {
     String goodTl = "WAIT,LOAD@100,TAKEOFF,AWAY,AWAY,AWAY,LAND";
 
 
-    private Aircraft fCraft1, fCraft2, fCraft3, fCraft4, pCraft1;
+    private Aircraft fCraft1, fCraft2, fCraft3, fCraft4, pCraft1, pCraft2, pCraft3;
     private ArrayList<Aircraft> craftsList;
 
     @Before
@@ -102,10 +103,47 @@ public class ControlTowerInitialiserTest {
                 taskList1,
                 AircraftCharacteristics.BOEING_747_8F.fuelCapacity * 0, 0);
 
-        craftsList = new ArrayList<Aircraft>(List.of(pCraft1, fCraft1, fCraft2, fCraft3, fCraft4));
+        this.pCraft2 = new FreightAircraft("UPS119",
+                AircraftCharacteristics.BOEING_747_8F,
+                taskList1,
+                AircraftCharacteristics.BOEING_747_8F.fuelCapacity * 0, 0);
+        this.pCraft3 = new FreightAircraft("UTD302",
+                AircraftCharacteristics.BOEING_747_8F,
+                taskList1,
+                AircraftCharacteristics.BOEING_747_8F.fuelCapacity * 0, 0);
+
+        craftsList = new ArrayList<Aircraft>(List.of(pCraft1, fCraft1, fCraft2, fCraft3, fCraft4, pCraft2, pCraft3));
 
     }
 
+    @Test
+    public void createControlTower_Test() throws MalformedSaveException {
+        
+    }
+
+    @Test
+    public void loadTerminals_Test2() throws MalformedSaveException {
+        String fContent = String.join(System.lineSeparator(), "1", "AirplaneTerminal:1:false:2", "69:UTD302", "2:empty");
+        String expected = "AirplaneTerminal:1:false:2" + System.lineSeparator() + "69:UTD302" + System.lineSeparator() + "2:empty";
+        try {
+            List<Terminal> loadedTerminals = ControlTowerInitialiser.loadTerminalsWithGates(new StringReader(fContent), craftsList);
+            assertEquals("Terminal Load mismatch", expected, loadedTerminals.get(0).encode());
+        } catch (IOException e) {
+            fail("Should not be malformed");
+        }
+    }
+
+
+    @Test
+    public void loadTerminals_Test() throws MalformedSaveException {
+        try {
+            BufferedReader br = new BufferedReader(new FileReader("saves/terminalsWithGates_basic.txt"));
+            List<Terminal> loadedTerminals = ControlTowerInitialiser.loadTerminalsWithGates(br, craftsList);
+            assertEquals("Terminal list size mismatch", 5, loadedTerminals.size());
+        } catch (IOException e) {
+            fail("Should not be malformed");
+        }
+    }
 
     @Test
     public void loadQueues_readLoad_Test1() throws MalformedSaveException {

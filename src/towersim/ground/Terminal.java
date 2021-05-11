@@ -258,20 +258,23 @@ public abstract class Terminal implements EmergencyState, OccupancyLevel, Encoda
      * @return encoded string representation of this terminal
      */
     public String encode() {
-        //TODO Implement this after encode in Gate has been added.
         StringBuilder encoded = new StringBuilder();
 
         //Constructs TerminalType:terminalNumber:emergency:numGates
         encoded.append(this.getClass().getSimpleName()).append(":");
         encoded.append(this.getTerminalNumber()).append(":");
         encoded.append(this.hasEmergency()).append(":");
-        encoded.append(this.getGates().size()).append("\n");
+        encoded.append(this.getGates().size());
+
+        if (this.getGates().size() > 0) {
+            encoded.append(System.lineSeparator());
+        }
 
         for (int i = 0; i < this.getGates().size(); ++i) {
             encoded.append(this.getGates().get(i).encode());
             //Don't add newline if this is the last iteration of the loop
             if (i + 1 < this.getGates().size()) {
-                encoded.append("\n");
+                encoded.append(System.lineSeparator());
             }
         }
         return encoded.toString();
