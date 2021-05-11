@@ -17,10 +17,7 @@ import towersim.util.NoSpaceException;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.Reader;
-import java.nio.Buffer;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Utility class that contains static methods for loading a control tower and
@@ -50,8 +47,28 @@ public class ControlTowerInitialiser {
     public static ControlTower createControlTower(Reader tick, Reader aircraft, Reader queues,
                                                   Reader terminalsWithGates)
             throws MalformedSaveException, IOException {
-        //TODO THIS
-        return null;
+
+        long loadedticks = loadTick(tick);
+
+        List<Aircraft> loadedAircrafts = loadAircraft(aircraft);
+        List<Terminal> loadedTerminals = loadTerminalsWithGates(terminalsWithGates,
+                loadedAircrafts);
+
+        TakeoffQueue loadedTakeoffQueue = new TakeoffQueue();
+        LandingQueue loadedLandingQueue = new LandingQueue();
+        Map<Aircraft, Integer> loadedLoadingMap = new TreeMap<Aircraft,
+                Integer>(Comparator.comparing(Aircraft::getCallsign));
+
+        //Attempt to create control tower
+        ControlTower controlTower = new ControlTower(loadedticks, loadedAircrafts,
+                loadedLandingQueue, loadedTakeoffQueue, loadedLoadingMap);
+
+        //Add terminals to contol tower.
+        for (Terminal attachTerminal : loadedTerminals) {
+            controlTower.addTerminal(attachTerminal);
+        }
+
+        return controlTower;
     }
 
     /**
@@ -736,7 +753,7 @@ public class ControlTowerInitialiser {
             //Theres more data beyond the last specified gate,
             //Thus, number of terminals specified is not equal to the number of
             // terminals actually read from the reader.
-            if ((line = br.readLine()) != null) {
+            if ((br.readLine()) != null) {
                 throw new MalformedSaveException();
             }
 
