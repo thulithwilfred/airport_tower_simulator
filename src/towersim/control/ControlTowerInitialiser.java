@@ -63,11 +63,11 @@ public class ControlTowerInitialiser {
         ControlTower controlTower = new ControlTower(loadedticks, loadedAircrafts,
                 loadedLandingQueue, loadedTakeoffQueue, loadedLoadingMap);
 
-        //Add terminals to contol tower.
+        //Add terminals to control tower.
         for (Terminal attachTerminal : loadedTerminals) {
             controlTower.addTerminal(attachTerminal);
         }
-
+        
         return controlTower;
     }
 
