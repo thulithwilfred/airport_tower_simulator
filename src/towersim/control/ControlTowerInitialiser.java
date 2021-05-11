@@ -50,7 +50,7 @@ public class ControlTowerInitialiser {
     public static ControlTower createControlTower(Reader tick, Reader aircraft, Reader queues,
                                                   Reader terminalsWithGates)
             throws MalformedSaveException, IOException {
-        //TODO THIS 
+        //TODO THIS
         return null;
     }
 
