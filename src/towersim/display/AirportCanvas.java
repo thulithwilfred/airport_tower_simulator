@@ -30,81 +30,50 @@ import java.util.stream.Collectors;
 
 /**
  * Subclass of the JavaFX Canvas to represent the main elements of the airport graphically.
- *
  * @given
  */
 public class AirportCanvas extends Canvas {
 
-    /**
-     * View model containing the main model of the application
-     */
+    /** View model containing the main model of the application */
     private final ViewModel viewModel;
 
-    /**
-     * Mapping of clickable regions (rectangles) to aircraft drawn on the canvas
-     */
+    /** Mapping of clickable regions (rectangles) to aircraft drawn on the canvas */
     private final Map<ClickableRegion, Aircraft> drawnAircraft;
 
-    /**
-     * Width of an aircraft when drawn on the canvas, in pixels
-     */
+    /** Width of an aircraft when drawn on the canvas, in pixels */
     private static final double AIRCRAFT_WIDTH = 75;
 
-    /**
-     * X coordinate of the top-left corner of the runway
-     */
+    /** X coordinate of the top-left corner of the runway */
     private final double runwayStartX;
 
-    /**
-     * Horizontal width of the runway
-     */
+    /** Horizontal width of the runway */
     private final double runwayWidth;
 
-    /**
-     * Height of an aircraft when drawn on the canvas, in pixels
-     */
+    /** Height of an aircraft when drawn on the canvas, in pixels */
     private static final double AIRCRAFT_HEIGHT = AIRCRAFT_WIDTH;
 
-    /**
-     * X coordinate of the aircraft being animated on the runway
-     */
+    /** X coordinate of the aircraft being animated on the runway */
     private final DoubleProperty runwayAnimationX = new SimpleDoubleProperty(0);
 
-    /**
-     * Animation timeline of a landing aircraft
-     */
+    /** Animation timeline of a landing aircraft */
     private final Timeline landTimeline;
 
-    /**
-     * Animation timeline of an aircraft taking off
-     */
+    /** Animation timeline of an aircraft taking off */
     private final Timeline takeoffTimeline;
 
-    /**
-     * A class to represent a rectangular region on the canvas that responds to click events
-     */
+    /** A class to represent a rectangular region on the canvas that responds to click events */
     private static class ClickableRegion {
 
-        /**
-         * X-coordinate of the region (top left)
-         */
+        /** X-coordinate of the region (top left) */
         private final double xcoord;
-        /**
-         * Y-coordinate of the region (top left)
-         */
+        /** Y-coordinate of the region (top left) */
         private final double ycoord;
-        /**
-         * Width of the region, in pixels
-         */
+        /** Width of the region, in pixels */
         private final double width;
-        /**
-         * Height of the region, in pixels
-         */
+        /** Height of the region, in pixels */
         private final double height;
 
-        /**
-         * Creates a new clickable region with the given coordinates and dimensions
-         */
+        /** Creates a new clickable region with the given coordinates and dimensions */
         public ClickableRegion(double x, double y, double width, double height) {
             this.xcoord = x;
             this.ycoord = y;
@@ -126,8 +95,8 @@ public class AirportCanvas extends Canvas {
      * Creates a new AirportCanvas with the given dimensions.
      *
      * @param viewModel view model to use to render elements on the canvas
-     * @param width     width of the canvas, in pixels
-     * @param height    height of the canvas, in pixels
+     * @param width width of the canvas, in pixels
+     * @param height height of the canvas, in pixels
      * @given
      */
     public AirportCanvas(ViewModel viewModel, double width, double height) {
@@ -525,24 +494,24 @@ public class AirportCanvas extends Canvas {
         GraphicsContext gc = getGraphicsContext2D();
 
         // Wings
-        gc.fillPolygon(new double[]{
-                x + AIRCRAFT_WIDTH / 2 + 8,
-                x + AIRCRAFT_WIDTH / 2 + 8,
-                x + AIRCRAFT_WIDTH / 2 - 10
-        }, new double[]{
-                y + 4,
-                y + 36,
-                y + 22}, 3);
+        gc.fillPolygon(new double[] {
+            x + AIRCRAFT_WIDTH / 2 + 8,
+            x + AIRCRAFT_WIDTH / 2 + 8,
+            x + AIRCRAFT_WIDTH / 2 - 10
+        }, new double[] {
+            y + 4,
+            y + 36,
+            y + 22}, 3);
 
         // Tail
-        gc.fillPolygon(new double[]{
-                x + AIRCRAFT_WIDTH - 4,
-                x + AIRCRAFT_WIDTH - 16,
-                x + AIRCRAFT_WIDTH - 4
-        }, new double[]{
-                y + 22,
-                y + 18,
-                y + 4}, 3);
+        gc.fillPolygon(new double[] {
+            x + AIRCRAFT_WIDTH - 4,
+            x + AIRCRAFT_WIDTH - 16,
+            x + AIRCRAFT_WIDTH - 4
+        }, new double[] {
+            y + 22,
+            y + 18,
+            y + 4}, 3);
 
         // Fuselage
         gc.fillRoundRect(x + 4,
