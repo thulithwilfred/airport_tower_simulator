@@ -439,14 +439,14 @@ public class ControlTower implements Tickable {
         loadAircraft();
 
         //4.On every second tick, attempt to land an aircraft by calling tryLandAircraft().
-        if (this.getTicksElapsed() % 2 == 0) {
-            //Second/Even Call
+        if (this.getTicksElapsed() % 2 == 1) {
+            //Second Call, tick indexing starts from 0.
             if (!tryLandAircraft()) {
                 //Aircraft could not be landed
                 tryTakeOffAircraft();
             }
         } else {
-            /* First/Odd Call
+            /* First Call
             5. If this is not a tick where the control tower is attempting to land
                an aircraft, an aircraft should be allowed to take off instead.
             */

@@ -48,9 +48,11 @@ public class ControlTowerInitialiser {
                                                   Reader terminalsWithGates)
             throws MalformedSaveException, IOException {
 
+        //Load Elapsed Tick
         long loadedticks = loadTick(tick);
-
+        //Load Aircrafts
         List<Aircraft> loadedAircrafts = loadAircraft(aircraft);
+        //Load Terminals
         List<Terminal> loadedTerminals = loadTerminalsWithGates(terminalsWithGates,
                 loadedAircrafts);
 
@@ -58,6 +60,10 @@ public class ControlTowerInitialiser {
         LandingQueue loadedLandingQueue = new LandingQueue();
         Map<Aircraft, Integer> loadedLoadingMap = new TreeMap<Aircraft,
                 Integer>(Comparator.comparing(Aircraft::getCallsign));
+
+        //Load Queues
+        loadQueues(queues, loadedAircrafts, loadedTakeoffQueue, loadedLandingQueue,
+                loadedLoadingMap);
 
         //Attempt to create control tower
         ControlTower controlTower = new ControlTower(loadedticks, loadedAircrafts,
@@ -197,6 +203,7 @@ public class ControlTowerInitialiser {
         }
 
         //The aircraft's AircraftCharacteristics is not valid
+
         if (!aircraftCharacteristicValid(tokens[1], parsedCharacteristic)) {
             throw new MalformedSaveException();
         }
@@ -217,6 +224,7 @@ public class ControlTowerInitialiser {
             //Passenger
             return new PassengerAircraft(tokens[0], parsedCharacteristic[0],
                     readTaskList(tokens[2]), parsedFuelAmount[0], aircraftCargoPacket[1]);
+
         } else if (aircraftCargoPacket[0] == 0xFF) {
             //Freight
             return new FreightAircraft(tokens[0], parsedCharacteristic[0],
@@ -700,6 +708,7 @@ public class ControlTowerInitialiser {
     private static boolean callsignInAircraftList(String callsign, List<Aircraft> aircraft,
                                                   int[] airCraftIndex) {
         int count = 0;
+
         for (Aircraft aircraftMatch : aircraft) {
             if (aircraftMatch.getCallsign().equals(callsign)) {
                 airCraftIndex[0] = count;
@@ -822,7 +831,32 @@ public class ControlTowerInitialiser {
                 throw new MalformedSaveException();
             }
         }
+
+        //Update Emergency Status.
+        if (parseTerminalEmergency(terminalData[2])) {
+            decodedTerminal.declareEmergency();
+        }
+
         return decodedTerminal;
+    }
+
+    /**
+     * Returns the boolean value of the string passed in.
+     * if hasEmergency neither "true" nor "false" MalformedSaveExp is thrown
+     *
+     * @param hasEmergency string to get boolean value of
+     * @return boolean value of string
+     * @throws MalformedSaveException string invalid.
+     */
+    private static boolean parseTerminalEmergency(String hasEmergency) throws MalformedSaveException {
+        if (hasEmergency.equals("true")) {
+            return true;
+        } else if (hasEmergency.equals("false")) {
+            return false;
+        } else {
+            //This token may only contain either true or false
+            throw new MalformedSaveException();
+        }
     }
 
     /**

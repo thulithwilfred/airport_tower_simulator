@@ -118,7 +118,7 @@ public class ControlTowerInitialiserTest {
 
     @Test
     public void createControlTower_Test() throws MalformedSaveException {
-        
+
     }
 
     @Test
@@ -223,6 +223,7 @@ public class ControlTowerInitialiserTest {
         String expected2 = "UTD302:BOEING_787:WAIT,LOAD@100,TAKEOFF,AWAY,AWAY,AWAY,LAND:10000.00:false:0";
         String expected3 = "VH-BFK:ROBINSON_R44:LAND,WAIT,LOAD@75,TAKEOFF,AWAY,AWAY:40.00:false:4";
         String expected4 = "UPS119:BOEING_747_8F:WAIT,LOAD@50,TAKEOFF,AWAY,AWAY,AWAY,LAND:4000.00:false:1414";
+
 
         try {
             List<Aircraft> loadedList = ControlTowerInitialiser.loadAircraft(new StringReader(fContent));
