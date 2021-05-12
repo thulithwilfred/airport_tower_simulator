@@ -127,7 +127,12 @@ public class ViewModel {
      * @ass2
      */
     public EventHandler<ActionEvent> getDroneAlertHandler() {
-        return null; // TODO implement for assignment 2
+        return actionEvent -> {
+            for (Terminal terminal : this.getControlTower().getTerminals()) {
+                terminal.declareEmergency();
+            }
+            registerChange();
+        };
     }
 
     /**
@@ -140,7 +145,13 @@ public class ViewModel {
      * @ass2
      */
     public EventHandler<ActionEvent> getDroneClearHandler() {
-        return null; // TODO implement for assignment 2
+
+        return actionEvent -> {
+            for (Terminal terminal : this.getControlTower().getTerminals()) {
+                terminal.clearEmergency();
+            }
+            registerChange();
+        };
     }
 
     /**
@@ -169,7 +180,28 @@ public class ViewModel {
      * @ass2
      */
     public EventHandler<ActionEvent> getFindSuitableGateHandler() {
-        return null; // TODO implement for assignment 2
+
+        return actionEvent -> {
+            //No aircraft is currently selected or Currently selected aircraft's current
+            Aircraft aircraft = getSelectedAircraft().get();
+
+            if (aircraft == null) {
+                return;
+            }
+
+            //Task type is not LAND,
+            if (aircraft.getTaskList().getCurrentTask().getType() != TaskType.LAND) {
+                return;
+            }
+
+            Gate unoccupiedGate;
+            try {
+                unoccupiedGate = this.getControlTower().findUnoccupiedGate(aircraft);
+                getSuitableGateText().set(unoccupiedGate.toString());
+            } catch (NoSuitableGateException nsge) {
+                getSuitableGateText().set("NoSuitableGateException");
+            }
+        };
     }
 
     /**
@@ -243,6 +275,7 @@ public class ViewModel {
     public void saveAs(Writer tickWriter, Writer aircraftWriter, Writer queuesWriter,
             Writer terminalsWithGatesWriter) throws IOException {
         // TODO implement for assignment 2
+        System.out.println("Saving");
     }
 
     /**
