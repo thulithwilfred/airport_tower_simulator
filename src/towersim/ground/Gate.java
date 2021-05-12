@@ -1,6 +1,7 @@
 package towersim.ground;
 
 import towersim.aircraft.Aircraft;
+import towersim.util.Encodable;
 import towersim.util.NoSpaceException;
 
 import java.util.Objects;
@@ -10,7 +11,7 @@ import java.util.Objects;
  *
  * @ass1
  */
-public class Gate {
+public class Gate implements Encodable {
 
     /**
      * Unique (airport-wide) gate number.

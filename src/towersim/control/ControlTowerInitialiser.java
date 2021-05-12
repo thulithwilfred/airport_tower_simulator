@@ -73,7 +73,7 @@ public class ControlTowerInitialiser {
         for (Terminal attachTerminal : loadedTerminals) {
             controlTower.addTerminal(attachTerminal);
         }
-        
+
         return controlTower;
     }
 
@@ -518,8 +518,8 @@ public class ControlTowerInitialiser {
      * @throws MalformedSaveException if the format of the text read from the reader is
      *                                invalid according to the rules above
      */
-    private static void readLoadingAircraft(BufferedReader reader, List<Aircraft> aircraft,
-                                            Map<Aircraft, Integer> loadingAircraft) throws
+    public static void readLoadingAircraft(BufferedReader reader, List<Aircraft> aircraft,
+                                           Map<Aircraft, Integer> loadingAircraft) throws
             IOException, MalformedSaveException {
         String line;
         if ((line = reader.readLine()) != null) {
@@ -619,8 +619,8 @@ public class ControlTowerInitialiser {
      * @throws MalformedSaveException if the format of the text read from the reader is
      *                                invalid according to the rules above
      */
-    private static void readQueue(BufferedReader reader, List<Aircraft> aircraft,
-                                  AircraftQueue queue) throws IOException,
+    public static void readQueue(BufferedReader reader, List<Aircraft> aircraft,
+                                 AircraftQueue queue) throws IOException,
             MalformedSaveException {
 
         String line;
@@ -848,7 +848,8 @@ public class ControlTowerInitialiser {
      * @return boolean value of string
      * @throws MalformedSaveException string invalid.
      */
-    private static boolean parseTerminalEmergency(String hasEmergency) throws MalformedSaveException {
+    private static boolean parseTerminalEmergency(String hasEmergency)
+            throws MalformedSaveException {
         if (hasEmergency.equals("true")) {
             return true;
         } else if (hasEmergency.equals("false")) {

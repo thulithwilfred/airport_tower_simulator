@@ -199,7 +199,7 @@ public class AirportCanvas extends Canvas {
         gc.fillRect(0, 0, getWidth(), getHeight());
 
         drawRunway();
-        drawQueue(viewModel.getControlTower().getTakeOffQueue(), 0, 0);
+        drawQueue(viewModel.getControlTower().getTakeoffQueue(), 0, 0);
         drawQueue(viewModel.getControlTower().getLandingQueue(), 0, AIRCRAFT_HEIGHT);
         drawAwayAircraft();
         drawTerminals();

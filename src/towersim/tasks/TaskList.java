@@ -28,7 +28,7 @@ public class TaskList implements Encodable {
      * @param tasks list of tasks
      * @ass1
      */
-    public TaskList(List<Task> tasks) throws IllegalArgumentException {
+    public TaskList(List<Task> tasks) {
         this.tasks = tasks;
         this.currentTaskIndex = 0;
 

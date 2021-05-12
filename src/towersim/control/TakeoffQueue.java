@@ -16,7 +16,7 @@ import java.util.Queue;
  * waiting for longer than another aircraft will always be allowed to take off before
  * the other aircraft.
  */
-public class TakeoffQueue extends AircraftQueue {
+public class TakeoffQueue extends AircraftQueue implements Encodable {
 
     /**
      * A queue (FIFO) that contains Aircrafts in takeoff queue.

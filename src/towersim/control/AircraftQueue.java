@@ -25,7 +25,8 @@ public abstract class AircraftQueue implements Encodable {
     public abstract void addAircraft(Aircraft aircraft);
 
     /**
-     * Removes and returns the aircraft at the front of the queue. Returns null if the queue is empty.
+     * Removes and returns the aircraft at the front of the queue. Returns null if the
+     * queue is empty.
      *
      * @return aircraft at front of queue
      */
@@ -101,7 +102,7 @@ public abstract class AircraftQueue implements Encodable {
                 .append(this.getAircraftInOrder().size());
 
         List<Aircraft> orderedAircrafts = this.getAircraftInOrder();
-        
+
         if (orderedAircrafts.size() > 0) {
             constructString.append(System.lineSeparator());
         }

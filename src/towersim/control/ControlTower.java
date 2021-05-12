@@ -175,7 +175,7 @@ public class ControlTower implements Tickable {
      *
      * @return Takeoff Queue
      */
-    public AircraftQueue getTakeOffQueue() {
+    public AircraftQueue getTakeoffQueue() {
         return this.takeoffQueue;
     }
 
@@ -290,8 +290,8 @@ public class ControlTower implements Tickable {
      */
     public void tryTakeOffAircraft() {
         //Check if takeOffQueue is not empty
-        if (this.getTakeOffQueue().peekAircraft() != null) {
-            Aircraft pendingTakeOff = this.getTakeOffQueue().removeAircraft();
+        if (this.getTakeoffQueue().peekAircraft() != null) {
+            Aircraft pendingTakeOff = this.getTakeoffQueue().removeAircraft();
             pendingTakeOff.getTaskList().moveToNextTask();
         }
     }
@@ -362,8 +362,8 @@ public class ControlTower implements Tickable {
                 break;
             case TAKEOFF:
                 //If TakeOffQueue does not contain aircraft
-                if (!this.getTakeOffQueue().containsAircraft(aircraft)) {
-                    this.getTakeOffQueue().addAircraft(aircraft);
+                if (!this.getTakeoffQueue().containsAircraft(aircraft)) {
+                    this.getTakeoffQueue().addAircraft(aircraft);
                 }
                 break;
             case LOAD:
@@ -480,7 +480,7 @@ public class ControlTower implements Tickable {
                 this.getTerminals().size(), //numTerminals
                 this.getAircraft().size(), //numAircraft
                 this.getLandingQueue().getAircraftInOrder().size(), //numLanding
-                this.getTakeOffQueue().getAircraftInOrder().size(), //numTakeOff
+                this.getTakeoffQueue().getAircraftInOrder().size(), //numTakeOff
                 this.getLoadingAircraft().size());
     }
 }

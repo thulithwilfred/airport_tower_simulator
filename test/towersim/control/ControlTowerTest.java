@@ -218,7 +218,7 @@ public class ControlTowerTest {
             towerA2.addAircraft(fCraft2);
             towerA2.addAircraft(fCraft3);
             assertTrue(towerA2.getLandingQueue().containsAircraft(fCraft1));
-            assertTrue(towerA2.getTakeOffQueue().containsAircraft(fCraft2));
+            assertTrue(towerA2.getTakeoffQueue().containsAircraft(fCraft2));
             assertTrue(towerA2.getLoadingAircraft().containsKey(fCraft3));
         } catch (NoSuitableGateException e) {
             fail("Should not throw NoGate");

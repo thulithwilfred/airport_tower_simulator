@@ -13,7 +13,7 @@ import java.util.*;
  * prioritised for landing based on "urgency" factors such as remaining fuel onboard,
  * emergency status and cargo type.
  */
-public class LandingQueue extends AircraftQueue {
+public class LandingQueue extends AircraftQueue implements Encodable {
 
     /**
      * A list that contains Aircrafts in landing queue.
@@ -171,7 +171,7 @@ public class LandingQueue extends AircraftQueue {
         if (this.landingQueue.size() <= 0) {
             return orderedQueue;
         }
-        
+
         //Copy the original landing queue, this is used to account for duplicates.
         ArrayList<Aircraft> copyLandingQueue = new ArrayList<>(this.landingQueue);
 

@@ -1,6 +1,5 @@
 package towersim.tasks;
 
-import com.sun.source.tree.BreakTree;
 import towersim.util.Encodable;
 
 import java.util.Objects;

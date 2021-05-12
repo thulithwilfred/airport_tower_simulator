@@ -1,10 +1,12 @@
 package towersim.util;
 
+import java.io.Serializable;
+
 /**
  * Exception thrown when a save file is in an invalid format or
  * contains incorrect data.
  */
-public class MalformedSaveException extends Exception {
+public class MalformedSaveException extends Exception implements Serializable {
 
     /**
      * Constructs a new MalformedSaveException with no detail message or cause.
@@ -15,7 +17,8 @@ public class MalformedSaveException extends Exception {
 
     /**
      * Constructs a MalformedSaveException that contains a helpful detail message
-     *  explaining why the exception occurred.
+     * explaining why the exception occurred.
+     *
      * @param message detail message
      */
     public MalformedSaveException(String message) {
@@ -24,7 +27,8 @@ public class MalformedSaveException extends Exception {
 
     /**
      * Constructs a MalformedSaveException that stores the
-     *  underlying cause of the exception.
+     * underlying cause of the exception.
+     *
      * @param cause throwable that caused this exception
      */
     public MalformedSaveException(Throwable cause) {
@@ -33,10 +37,10 @@ public class MalformedSaveException extends Exception {
 
     /**
      * Constructs a MalformedSaveException that contains a helpful detail message explaining
-     *  why the exception occurred and the underlying cause of the exception.
+     * why the exception occurred and the underlying cause of the exception.
      *
      * @param message detail message
-     * @param cause throwable that caused this exception
+     * @param cause   throwable that caused this exception
      */
     public MalformedSaveException(String message, Throwable cause) {
         super(message, cause);
