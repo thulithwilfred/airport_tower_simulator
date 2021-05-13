@@ -295,25 +295,25 @@ public class ViewModel {
      * @throws IOException if IO error while writing.
      */
     private void terminalWithGatesSaveAs(Writer writer) throws IOException {
-        BufferedWriter bufferedWriter = new BufferedWriter(writer);
+
         int terminalCount = this.getControlTower().getTerminals().size();
         String numTerminals = String.valueOf(terminalCount);
 
-        bufferedWriter.write(numTerminals);
+        writer.write(numTerminals);
 
         if (terminalCount > 0) {
-            bufferedWriter.write(System.lineSeparator());
+            writer.write(System.lineSeparator());
         }
 
         int index = 0;
         for (Terminal terminal : this.getControlTower().getTerminals()) {
-            bufferedWriter.write(terminal.encode());
+            writer.write(terminal.encode());
             if (index + 1 < terminalCount) {
-                bufferedWriter.write(System.lineSeparator());
+                writer.write(System.lineSeparator());
             }
             index++;
         }
-        bufferedWriter.close();
+        writer.close();
     }
 
     /**
@@ -328,33 +328,34 @@ public class ViewModel {
      * @throws IOException if IO error while writing.
      */
     private void queuesSavesAs(Writer writer) throws IOException {
-        BufferedWriter bufferedWriter = new BufferedWriter(writer);
-        bufferedWriter.write(this.getControlTower().getTakeoffQueue().encode());
-        bufferedWriter.write(System.lineSeparator());
-        bufferedWriter.write(this.getControlTower().getLandingQueue().encode());
-        bufferedWriter.write(System.lineSeparator());
-        String numLoadingAircraft = String.valueOf(this.getControlTower()
-                .getLoadingAircraft().size());
-        int mapSize = this.getControlTower().getLoadingAircraft().size();
+        //Write TakeOffEncode
+        writer.write(this.getControlTower().getTakeoffQueue().encode());
+        writer.write(System.lineSeparator());
+        //Write Landing Encode
+        writer.write(this.getControlTower().getLandingQueue().encode());
+        writer.write(System.lineSeparator());
 
-        bufferedWriter.write("LoadingAircraft:" + numLoadingAircraft);
+        int mapSize = this.getControlTower().getLoadingAircraft().size();
+        String numLoadingAircraft = String.valueOf(mapSize);
+
+        writer.write("LoadingAircraft:" + numLoadingAircraft);
 
         if (mapSize > 0) {
-            bufferedWriter.write(System.lineSeparator());
+            writer.write(System.lineSeparator());
         }
 
         int index = 0;
 
         for (Map.Entry<Aircraft, Integer> entry : this.getControlTower()
                 .getLoadingAircraft().entrySet()) {
-            bufferedWriter.write(entry.getKey().getCallsign() + ":"
+            writer.write(entry.getKey().getCallsign() + ":"
                     + String.valueOf(entry.getValue()));
             if (index + 1 < mapSize) {
-                bufferedWriter.write(",");
+                writer.write(",");
             }
             index++;
         }
-        bufferedWriter.close();
+        writer.close();
     }
 
     /**
@@ -369,34 +370,36 @@ public class ViewModel {
      * @throws IOException if IO error while writing.
      */
     private void aircraftSaveAs(Writer writer) throws IOException {
-        BufferedWriter bufferedWriter = new BufferedWriter(writer);
+
         String aircraftCount = String.valueOf(this.getControlTower().getAircraft().size());
 
-        bufferedWriter.write(aircraftCount + System.lineSeparator());
+        writer.write(aircraftCount);
+
+        if (getControlTower().getAircraft().size() > 0) {
+            writer.write(System.lineSeparator());
+        }
 
         int index = 0;
         for (Aircraft aircraft : this.getControlTower().getAircraft()) {
 
-            bufferedWriter.write(aircraft.encode());
+            writer.write(aircraft.encode());
             //Last aircraft do not add new line.
             if (index + 1 < this.getControlTower().getAircraft().size()) {
-                bufferedWriter.write(System.lineSeparator());
+                writer.write(System.lineSeparator());
             }
             index++;
         }
-        bufferedWriter.close();
+        writer.close();
     }
 
     /**
-     * Saves the ticksElapsed value into a the passed writer.
+     * Saves the ticksElapsed value into the passed writer.
      * @param writer to write ticks to (save)
      * @throws IOException if IO error while writing.
      */
     private void tickSaveAs(Writer writer) throws IOException {
-        BufferedWriter bufferedWriter = new BufferedWriter(writer);
-        String ticksElapsed = String.valueOf(this.getControlTower().getTicksElapsed());
-        bufferedWriter.write(ticksElapsed);
-        bufferedWriter.close();
+        writer.write(String.valueOf(getControlTower().getTicksElapsed()));
+        writer.close();
     }
 
     /**
