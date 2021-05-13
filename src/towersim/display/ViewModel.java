@@ -274,7 +274,7 @@ public class ViewModel {
      */
     public void saveAs(Writer tickWriter, Writer aircraftWriter, Writer queuesWriter,
             Writer terminalsWithGatesWriter) throws IOException {
-        // TODO implement for assignment 2
+        //The following methods will write to respective writers and CLOSE/Flush buffers.
         tickSaveAs(tickWriter);
         aircraftSaveAs(aircraftWriter);
         queuesSavesAs(queuesWriter);
@@ -294,8 +294,26 @@ public class ViewModel {
      * @param writer to write save data to.
      * @throws IOException if IO error while writing.
      */
-    private void terminalWithGatesSaveAs(Writer writer) throws IOException{
+    private void terminalWithGatesSaveAs(Writer writer) throws IOException {
+        BufferedWriter bufferedWriter = new BufferedWriter(writer);
+        int terminalCount = this.getControlTower().getTerminals().size();
+        String numTerminals = String.valueOf(terminalCount);
 
+        bufferedWriter.write(numTerminals);
+
+        if (terminalCount > 0) {
+            bufferedWriter.write(System.lineSeparator());
+        }
+
+        int index = 0;
+        for (Terminal terminal : this.getControlTower().getTerminals()) {
+            bufferedWriter.write(terminal.encode());
+            if (index + 1 < terminalCount) {
+                bufferedWriter.write(System.lineSeparator());
+            }
+            index++;
+        }
+        bufferedWriter.close();
     }
 
     /**
@@ -327,7 +345,8 @@ public class ViewModel {
 
         int index = 0;
 
-        for (Map.Entry<Aircraft, Integer> entry : this.getControlTower().getLoadingAircraft().entrySet()) {
+        for (Map.Entry<Aircraft, Integer> entry : this.getControlTower()
+                .getLoadingAircraft().entrySet()) {
             bufferedWriter.write(entry.getKey().getCallsign() + ":"
                     + String.valueOf(entry.getValue()));
             if (index + 1 < mapSize) {
